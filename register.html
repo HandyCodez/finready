@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daftar — FinLearn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f7f6f3;
+      --card: #ffffff;
+      --border: #e8e4dc;
+      --text: #1a1814;
+      --muted: #7a756b;
+      --primary: #16a34a;
+      --primary-light: #dcfce7;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --error: #dc2626;
+      --error-light: #fee2e2;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 15px;
+      line-height: 1.6;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* ── LEFT PANEL ── */
+    .panel-left {
+      background: var(--card);
+      display: flex; align-items: center; justify-content: center;
+      padding: 48px 40px;
+      min-height: 100vh;
+      overflow-y: auto;
+    }
+    .form-wrap { width: 100%; max-width: 420px; }
+    .form-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 36px;
+    }
+    .logo {
+      display: inline-flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--text); font-weight: 700; font-size: 18px;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-icon svg { width: 20px; height: 20px; }
+
+    .form-heading { margin-bottom: 28px; }
+    .form-heading h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.02em; }
+    .form-heading p { color: var(--muted); font-size: 14px; }
+    .form-heading p a { color: var(--primary); text-decoration: none; font-weight: 600; }
+    .form-heading p a:hover { text-decoration: underline; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text);
+    }
+    .form-label-hint { font-weight: 400; color: var(--muted); font-size: 12px; }
+    .form-input {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 14px; font-family: inherit;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .form-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(22,163,74,.12);
+      background: #fff;
+    }
+    .form-input::placeholder { color: #bbb; }
+    .form-input.has-error { border-color: var(--error); }
+    .form-input.has-error:focus { box-shadow: 0 0 0 3px rgba(220,38,38,.1); }
+    .form-input.valid { border-color: var(--success); }
+    .field-error { font-size: 12px; color: var(--error); margin-top: 5px; display: none; }
+    .field-error.show { display: block; }
+
+    .input-wrap { position: relative; }
+    .input-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); pointer-events: none;
+    }
+    .input-icon ~ .form-input { padding-left: 42px; }
+    .toggle-pw {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--muted);
+      display: flex; align-items: center; transition: color .15s;
+    }
+    .toggle-pw:hover { color: var(--text); }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* Password strength */
+    .pw-strength { margin-top: 8px; }
+    .pw-bars { display: flex; gap: 4px; margin-bottom: 4px; }
+    .pw-bar {
+      flex: 1; height: 4px; border-radius: 2px;
+      background: var(--border); transition: background .3s;
+    }
+    .pw-bar.weak { background: var(--error); }
+    .pw-bar.medium { background: #f59e0b; }
+    .pw-bar.strong { background: var(--success); }
+    .pw-label { font-size: 11px; color: var(--muted); }
+    .pw-label.weak { color: var(--error); }
+    .pw-label.medium { color: #b45309; }
+    .pw-label.strong { color: var(--success); }
+
+    /* Plan selector */
+    .plan-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .plan-option { display: none; }
+    .plan-card {
+      border: 1.5px solid var(--border);
+      border-radius: 14px; padding: 14px 16px;
+      cursor: pointer; transition: all .15s; position: relative;
+      background: var(--bg);
+    }
+    .plan-card:hover { border-color: var(--primary); background: var(--primary-light); }
+    .plan-option:checked + .plan-card {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .plan-option:checked + .plan-card::after {
+      content: '✓';
+      position: absolute; top: 10px; right: 12px;
+      width: 20px; height: 20px;
+      background: var(--primary); color: #fff;
+      border-radius: 50%;
+      font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .plan-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+    .plan-price { font-size: 12px; color: var(--muted); }
+    .plan-price strong { color: var(--success); font-size: 13px; }
+
+    /* Terms */
+    .terms-wrap { margin-bottom: 20px; }
+    .checkbox-wrap { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+    .checkbox-wrap input[type="checkbox"] { display: none; }
+    .checkbox-box {
+      width: 18px; height: 18px; min-width: 18px; border-radius: 5px;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      transition: all .15s; margin-top: 1px;
+    }
+    .checkbox-wrap input:checked + .checkbox-box { background: var(--primary); border-color: var(--primary); }
+    .checkbox-wrap input:checked + .checkbox-box svg { display: block; }
+    .checkbox-box svg { display: none; }
+    .checkbox-lbl { font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .checkbox-lbl a { color: var(--primary); text-decoration: none; font-weight: 600; }
+
+    .btn-submit {
+      width: 100%; background: var(--primary); color: #fff;
+      border: none; border-radius: 14px; padding: 14px;
+      font-size: 15px; font-weight: 600; font-family: inherit;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background .18s, transform .12s, box-shadow .18s;
+    }
+    .btn-submit:hover { background: #15803d; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(22,163,74,.3); }
+    .btn-submit.loading { pointer-events: none; opacity: .8; }
+
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 20px 0; font-size: 13px; color: var(--muted);
+    }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .btn-social {
+      width: 100%; background: var(--bg); color: var(--text);
+      border: 1.5px solid var(--border); border-radius: 14px;
+      padding: 12px; font-size: 14px; font-weight: 600; font-family: inherit;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: all .15s;
+    }
+    .btn-social:hover { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+
+    /* ── RIGHT PANEL ── */
+    .panel-right {
+      background: linear-gradient(160deg, #14532d 0%, #15803d 40%, #16a34a 100%);
+      padding: 48px;
+      display: flex; flex-direction: column; justify-content: space-between;
+      min-height: 100vh;
+      position: relative; overflow: hidden;
+    }
+    .panel-right::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 80% 20%, rgba(255,255,255,.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 20% 80%, rgba(255,255,255,.1) 0%, transparent 50%);
+    }
+    .panel-right > * { position: relative; z-index: 1; }
+    .panel-right-top { display: flex; justify-content: flex-end; }
+    .panel-right-badge {
+      background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25);
+      border-radius: 999px; padding: 6px 14px;
+      font-size: 12px; font-weight: 700; color: #fff; letter-spacing: .04em;
+    }
+
+    .panel-right-content { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 40px 0; }
+    .panel-right-content h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(30px, 2.8vw, 42px); font-weight: 900;
+      color: #fff; line-height: 1.1; letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+    .panel-right-content h2 em { font-style: italic; color: rgba(255,255,255,.7); }
+    .panel-right-content p { color: rgba(255,255,255,.7); font-size: 15px; line-height: 1.7; max-width: 380px; margin-bottom: 36px; }
+
+    .benefit-list { display: flex; flex-direction: column; gap: 14px; }
+    .benefit-item { display: flex; align-items: center; gap: 14px; }
+    .benefit-icon {
+      width: 40px; height: 40px; min-width: 40px;
+      background: rgba(255,255,255,.15); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .benefit-text { color: rgba(255,255,255,.85); font-size: 14px; font-weight: 500; }
+    .benefit-text span { display: block; font-size: 12px; color: rgba(255,255,255,.5); font-weight: 400; margin-top: 1px; }
+
+    .panel-right-footer {
+      color: rgba(255,255,255,.5); font-size: 13px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .users-avatars { display: flex; }
+    .user-av {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: #fff;
+      margin-left: -8px;
+    }
+    .user-av:first-child { margin-left: 0; }
+
+    /* Spinner */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin .6s linear infinite; display: none;
+    }
+    .btn-submit.loading .spinner { display: block; }
+    .btn-submit.loading .btn-text { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Success state */
+    .success-overlay {
+      display: none; flex-direction: column; align-items: center;
+      justify-content: center; text-align: center; padding: 40px;
+    }
+    .success-overlay.show { display: flex; }
+    .form-wrap.success-mode > *:not(.success-overlay) { display: none; }
+    .form-wrap.success-mode .success-overlay { display: flex; }
+    .success-icon {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: var(--success-light);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px; font-size: 36px;
+    }
+    .success-overlay h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .success-overlay p { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+    .btn-go {
+      background: var(--primary); color: #fff;
+      border: none; border-radius: 14px; padding: 13px 28px;
+      font-size: 14px; font-weight: 600; font-family: inherit;
+      cursor: pointer; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: background .18s;
+    }
+    .btn-go:hover { background: #15803d; }
+
+    @media (max-width: 768px) {
+      body { grid-template-columns: 1fr; }
+      .panel-right { display: none; }
+      .panel-left { padding: 32px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LEFT: FORM -->
+<div class="panel-left">
+  <div class="form-wrap" id="formWrap">
+    <div class="form-top">
+      <a href="index.html" class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+            <path d="M3 3v18h18"/><path d="m7 16 4-4 4 4 4-8"/>
+          </svg>
+        </div>
+        FinLearn
+      </a>
+    </div>
+
+    <div class="form-heading">
+      <h1>Buat akun gratis</h1>
+      <p>Sudah punya akun? <a href="login.html">Masuk sekarang</a></p>
+    </div>
+
+    <form id="registerForm" novalidate>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="firstName">Nama Depan</label>
+          <input type="text" id="firstName" class="form-input" placeholder="Budi" autocomplete="given-name" required />
+          <p class="field-error" id="firstNameError">Nama depan wajib diisi.</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="lastName">Nama Belakang</label>
+          <input type="text" id="lastName" class="form-input" placeholder="Santoso" autocomplete="family-name" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">Email</label>
+        <div class="input-wrap">
+          <svg class="input-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          <input type="email" id="email" class="form-input" placeholder="budi@email.com" autocomplete="email" required />
+        </div>
+        <p class="field-error" id="emailError">Masukkan email yang valid.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">
+          Kata Sandi
+          <span class="form-label-hint">min. 8 karakter</span>
+        </label>
+        <div class="input-wrap">
+          <svg class="input-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input type="password" id="password" class="form-input" placeholder="Buat kata sandi" autocomplete="new-password" required />
+          <button type="button" class="toggle-pw" id="togglePw">
+            <svg id="eyeIcon1" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="pw-strength" id="pwStrength" style="display:none">
+          <div class="pw-bars">
+            <div class="pw-bar" id="bar1"></div>
+            <div class="pw-bar" id="bar2"></div>
+            <div class="pw-bar" id="bar3"></div>
+            <div class="pw-bar" id="bar4"></div>
+          </div>
+          <p class="pw-label" id="pwLabel">Terlalu lemah</p>
+        </div>
+        <p class="field-error" id="passwordError">Kata sandi minimal 8 karakter.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="confirmPw">Konfirmasi Kata Sandi</label>
+        <div class="input-wrap">
+          <svg class="input-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input type="password" id="confirmPw" class="form-input" placeholder="Ulangi kata sandi" autocomplete="new-password" required />
+          <button type="button" class="toggle-pw" id="togglePw2">
+            <svg id="eyeIcon2" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <p class="field-error" id="confirmError">Kata sandi tidak sama.</p>
+      </div>
+
+      <!-- Plan -->
+      <!-- <div style="margin-bottom:8px">
+        <p class="form-label" style="display:block;margin-bottom:10px">Pilih Paket</p>
+        <div class="plan-selector">
+          <div>
+            <input type="radio" name="plan" id="planFree" class="plan-option" value="free" checked>
+            <label class="plan-card" for="planFree">
+              <div class="plan-name">Gratis</div>
+              <div class="plan-price"><strong>Rp 0</strong> / selamanya</div>
+            </label>
+          </div>
+          <div>
+            <input type="radio" name="plan" id="planPro" class="plan-option" value="pro">
+            <label class="plan-card" for="planPro">
+              <div class="plan-name">Pro ⚡</div>
+              <div class="plan-price"><strong>Rp 99K</strong> / bulan</div>
+            </label>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- Terms -->
+      <div class="terms-wrap">
+        <label class="checkbox-wrap" id="termsWrap">
+          <input type="checkbox" id="terms" required>
+          <div class="checkbox-box">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <span class="checkbox-lbl">Saya menyetujui <a href="#">Syarat & Ketentuan</a> dan <a href="#">Kebijakan Privasi</a> FinLearn.</span>
+        </label>
+        <p class="field-error" id="termsError">Anda harus menyetujui syarat & ketentuan.</p>
+      </div>
+
+      <button type="submit" class="btn-submit" id="registerBtn">
+        <span class="btn-text">Buat Akun Gratis</span>
+        <div class="spinner"></div>
+      </button>
+    </form>
+
+    <div class="divider">atau daftar dengan</div>
+
+    <button class="btn-social" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Daftar dengan Google
+    </button>
+
+    <!-- Success state -->
+    <div class="success-overlay" id="successOverlay">
+      <div class="success-icon">🎉</div>
+      <h2>Akun berhasil dibuat!</h2>
+      <p>Selamat bergabung di FinLearn. Mulai perjalanan belajar keuangan Anda sekarang.</p>
+      <a href="pembelajaran.html" class="btn-go">
+        Mulai Belajar
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="panel-right">
+  <div class="panel-right-top">
+    <div class="panel-right-badge">🔒 Daftar 100% Gratis</div>
+  </div>
+
+  <div class="panel-right-content">
+    <h2>Mulai perjalanan<br><em>keuangan</em> Anda</h2>
+    <p>Bergabunglah dan dapatkan akses ke ratusan materi laporan keuangan yang disusun oleh para ahli.</p>
+
+    <div class="benefit-list">
+      <!-- <div class="benefit-item">
+        <div class="benefit-icon">📊</div>
+        <div class="benefit-text">
+          24 Modul Gratis Selamanya
+          <span>Akses konten dasar tanpa batas waktu</span>
+        </div>
+      </div> -->
+      <div class="benefit-item">
+        <div class="benefit-icon">✅</div>
+        <div class="benefit-text">
+          Ratusan Soal Latihan
+          <span>Uji pemahaman dengan kuis interaktif</span>
+        </div>
+      </div>
+      <!-- <div class="benefit-item">
+        <div class="benefit-icon">🏆</div>
+        <div class="benefit-text">
+          Sertifikat Digital
+          <span>Bukti kompetensi untuk portofolio Anda</span>
+        </div>
+      </div> -->
+      <div class="benefit-item">
+        <div class="benefit-icon">👥</div>
+        <div class="benefit-text">
+          Komunitas Eksklusif
+          <span>Diskusi dengan sesama pelajar & mentor</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- <div class="panel-right-footer">
+    <div class="users-avatars">
+      <div class="user-av" style="background:#22c55e">BR</div>
+      <div class="user-av" style="background:#16a34a">SW</div>
+      <div class="user-av" style="background:#f59e0b">DK</div>
+      <div class="user-av" style="background:#dc2626">RP</div>
+      <div class="user-av" style="background:#7c3aed">+</div>
+    </div>
+    10.000+ pelajar sudah bergabung
+  </div>
+</div> -->
+
+<script>
+  // Password toggle
+  function makeToggle(btnId, inputId, iconId) {
+    document.getElementById(btnId).addEventListener('click', () => {
+      const inp = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      const isHidden = inp.type === 'password';
+      inp.type = isHidden ? 'text' : 'password';
+      icon.innerHTML = isHidden
+        ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+        : '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>';
+    });
+  }
+  makeToggle('togglePw', 'password', 'eyeIcon1');
+  makeToggle('togglePw2', 'confirmPw', 'eyeIcon2');
+
+  // Password strength
+  const pwInput = document.getElementById('password');
+  pwInput.addEventListener('input', () => {
+    const val = pwInput.value;
+    const strength = document.getElementById('pwStrength');
+    const label = document.getElementById('pwLabel');
+    const bars = [document.getElementById('bar1'), document.getElementById('bar2'), document.getElementById('bar3'), document.getElementById('bar4')];
+
+    if (!val) { strength.style.display = 'none'; return; }
+    strength.style.display = 'block';
+
+    let score = 0;
+    if (val.length >= 8) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    const levels = ['', 'weak', 'weak', 'medium', 'strong'];
+    const labels = { weak: 'Lemah', medium: 'Sedang', strong: 'Kuat' };
+    const cls = levels[score] || 'weak';
+
+    bars.forEach((b, i) => {
+      b.className = 'pw-bar';
+      if (i < score) b.classList.add(cls);
+    });
+    label.className = 'pw-label ' + cls;
+    label.textContent = labels[cls] || 'Lemah';
+  });
+
+  // Form validation
+  const form = document.getElementById('registerForm');
+  const btn = document.getElementById('registerBtn');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let valid = true;
+
+    const firstName = document.getElementById('firstName');
+    const email = document.getElementById('email');
+    const password = document.getElementById('password');
+    const confirmPw = document.getElementById('confirmPw');
+    const terms = document.getElementById('terms');
+
+    // First name
+    if (!firstName.value.trim()) {
+      firstName.classList.add('has-error');
+      document.getElementById('firstNameError').classList.add('show');
+      valid = false;
+    } else {
+      firstName.classList.remove('has-error');
+      document.getElementById('firstNameError').classList.remove('show');
+    }
+
+    // Email
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRe.test(email.value)) {
+      email.classList.add('has-error');
+      document.getElementById('emailError').classList.add('show');
+      valid = false;
+    } else {
+      email.classList.remove('has-error');
+      document.getElementById('emailError').classList.remove('show');
+    }
+
+    // Password
+    if (password.value.length < 8) {
+      password.classList.add('has-error');
+      document.getElementById('passwordError').classList.add('show');
+      valid = false;
+    } else {
+      password.classList.remove('has-error');
+      document.getElementById('passwordError').classList.remove('show');
+    }
+
+    // Confirm
+    if (confirmPw.value !== password.value || !confirmPw.value) {
+      confirmPw.classList.add('has-error');
+      document.getElementById('confirmError').classList.add('show');
+      valid = false;
+    } else {
+      confirmPw.classList.remove('has-error');
+      document.getElementById('confirmError').classList.remove('show');
+    }
+
+    // Terms
+    if (!terms.checked) {
+      document.getElementById('termsError').classList.add('show');
+      valid = false;
+    } else {
+      document.getElementById('termsError').classList.remove('show');
+    }
+
+    if (!valid) return;
+
+    // Submit
+    btn.classList.add('loading');
+    setTimeout(() => {
+      btn.classList.remove('loading');
+      // Show success
+      document.getElementById('formWrap').classList.add('success-mode');
+      document.getElementById('successOverlay').classList.add('show');
+    }, 1800);
+  });
+
+  // Clear error on input
+  ['firstName', 'email', 'password', 'confirmPw'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      document.getElementById(id).classList.remove('has-error');
+    });
+  });
+</script>
+</body>
+</html>

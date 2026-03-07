@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Selectors - Web Development Fundamentals</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwindcss.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#16a34a',
+              600: '#16a34a',
+              700: '#15803d',
+            },
+            success: {
+              500: '#16a34a',
+              600: '#16a34a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+    }
+    
+    .video-container iframe,
+    .video-container video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .lesson-item.active {
+      background-color: #f0fdf4;
+      border-left: 3px solid #16a34a;
+    }
+    
+    .lesson-item:hover:not(.active) {
+      background-color: #f8fafc;
+    }
+    
+    .code-block {
+      background-color: #1e293b;
+      color: #e2e8f0;
+      border-radius: 0.75rem;
+      overflow-x: auto;
+    }
+    
+    .code-block code {
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.875rem;
+      line-height: 1.7;
+    }
+    
+    .keyword { color: #c084fc; }
+    .selector { color: #fbbf24; }
+    .property { color: #4ade80; }
+    .value { color: #4ade80; }
+    .comment { color: #64748b; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+  
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Back Button & Course Title -->
+        <div class="flex items-center gap-4">
+          <a href="/" class="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m15 18-6-6 6-6"/>
+            </svg>
+            <span class="hidden sm:inline text-sm font-medium">Kembali ke Kursus</span>
+          </a>
+          <div class="hidden md:block h-6 w-px bg-slate-200"></div>
+          <h1 class="hidden md:block text-sm font-medium text-slate-900 truncate max-w-xs">Web Development Fundamentals</h1>
+        </div>
+        
+        <!-- Progress -->
+        <div class="flex items-center gap-4">
+          <div class="hidden sm:flex items-center gap-2">
+            <span class="text-sm text-slate-600">Progress:</span>
+            <div class="w-32 h-2 bg-slate-200 rounded-full overflow-hidden">
+              <div class="h-full bg-green-500 rounded-full" style="width: 35%"></div>
+            </div>
+            <span class="text-sm font-medium text-slate-900">35%</span>
+          </div>
+          <button class="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+  
+  <div class="flex">
+    <!-- Sidebar - Lesson List -->
+    <aside class="hidden lg:block w-80 bg-white border-r border-slate-200 h-[calc(100vh-64px)] sticky top-16 overflow-y-auto">
+      <div class="p-4 border-b border-slate-200">
+        <h2 class="font-semibold text-slate-900">Modul 3: CSS Basics</h2>
+        <p class="text-sm text-slate-500 mt-1">5 dari 8 pelajaran selesai</p>
+        <div class="mt-3 h-2 bg-slate-200 rounded-full overflow-hidden">
+          <div class="h-full bg-success-500 rounded-full" style="width: 62.5%"></div>
+        </div>
+      </div>
+      
+      <nav class="py-2">
+        <!-- Lesson 1 - Completed -->
+        <a href="#" class="lesson-item flex items-center gap-3 px-4 py-3 text-slate-600 transition-colors">
+          <div class="w-6 h-6 rounded-full bg-success-500 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate">Introduction to CSS</p>
+            <p class="text-xs text-slate-400">8 menit</p>
+          </div>
+        </a>
+        
+        <!-- Lesson 2 - Completed -->
+        <a href="#" class="lesson-item flex items-center gap-3 px-4 py-3 text-slate-600 transition-colors">
+          <div class="w-6 h-6 rounded-full bg-success-500 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate">CSS Syntax & Structure</p>
+            <p class="text-xs text-slate-400">12 menit</p>
+          </div>
+        </a>
+        
+        <!-- Lesson 3 - Active -->
+        <a href="#" class="lesson-item active flex items-center gap-3 px-4 py-3 transition-colors">
+          <div class="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-green-700 truncate">CSS Selectors</p>
+            <p class="text-xs text-green-500">15 menit</p>
+          </div>
+        </a>
+        
+        <!-- Lesson 4 - Completed -->
+        <a href="#" class="lesson-item flex items-center gap-3 px-4 py-3 text-slate-600 transition-colors">
+          <div class="w-6 h-6 rounded-full bg-success-500 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate">Colors & Backgrounds</p>
+            <p class="text-xs text-slate-400">10 menit</p>
+          </div>
+        </a>
+        
+        <!-- Lesson 5 - Completed -->
+        <a href="#" class="lesson-item flex items-center gap-3 px-4 py-3 text-slate-600 transition-colors">
+          <div class="w-6 h-6 rounded-full bg-success-500 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate">Typography in CSS</p>
+            <p class="text-xs text-slate-400">14 menit</p>
+          </div>
+        </a>
+        
+        <!-- Lesson 6 - Not Started -->
+        <a href="#" class="lesson-item flex items-center gap-3 px-4 py-3 text-slate-600 transition-colors">
+          <div class="w-6 h-6 rounded-full border-2 border-slate-300 flex items-center justify-center flex-shrink-0">
+            <span class="text-xs font-medium text-slate-400">6</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate">Box Model</p>
+            <p class="text-xs text-slate-400">18 menit</p>
+          </div>
+        </a>
+        
+        <!-- Lesson 7 - Locked -->
+        <a href="#" class="lesson-item flex items-center gap-3 px-4 py-3 text-slate-400 transition-colors">
+          <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate">Display & Positioning</p>
+            <p class="text-xs text-slate-300">20 menit</p>
+          </div>
+        </a>
+        
+        <!-- Lesson 8 - Quiz -->
+        <a href="#" class="lesson-item flex items-center gap-3 px-4 py-3 text-slate-400 transition-colors">
+          <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate">Quiz: CSS Basics</p>
+            <p class="text-xs text-slate-300">10 pertanyaan</p>
+          </div>
+        </a>
+      </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="flex-1 min-w-0">
+      <!-- Video Section -->
+      <section class="bg-slate-900">
+        <div class="max-w-5xl mx-auto">
+          <div class="video-container">
+            <!-- Placeholder video - replace src with actual video -->
+            <div class="absolute inset-0 flex items-center justify-center bg-slate-800">
+              <div class="text-center">
+                <button id="playButton" class="w-20 h-20 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center mx-auto transition-colors shadow-lg shadow-green-500/30">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="5 3 19 12 5 21 5 3"/>
+                  </svg>
+                </button>
+                <p class="text-white/80 mt-4 text-sm">Klik untuk memutar video</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Video Controls -->
+          <div class="bg-slate-800 px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <button class="text-white/80 hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="19 20 9 12 19 4 19 20"/>
+                  <line x1="5" x2="5" y1="19" y2="5"/>
+                </svg>
+              </button>
+              <button class="text-white/80 hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="6" y="4" width="4" height="16"/>
+                  <rect x="14" y="4" width="4" height="16"/>
+                </svg>
+              </button>
+              <button class="text-white/80 hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="5 4 15 12 5 20 5 4"/>
+                  <line x1="19" x2="19" y1="5" y2="19"/>
+                </svg>
+              </button>
+              <div class="text-white/60 text-sm ml-2">
+                <span class="text-white">3:42</span> / 15:00
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+              <button class="text-white/80 hover:text-white transition-colors text-sm font-medium">
+                1x
+              </button>
+              <button class="text-white/80 hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                </svg>
+              </button>
+              <button class="text-white/80 hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Progress Bar -->
+          <div class="h-1 bg-slate-700">
+            <div class="h-full bg-green-500" style="width: 25%"></div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Lesson Content -->
+      <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Lesson Header -->
+        <div class="mb-8">
+          <div class="flex items-center gap-2 text-sm text-slate-500 mb-2">
+            <span>Modul 3</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m9 18 6-6-6-6"/>
+            </svg>
+            <span>Pelajaran 3 dari 8</span>
+          </div>
+          <h1 class="text-3xl font-bold text-slate-900 mb-4">CSS Selectors</h1>
+          <div class="flex flex-wrap items-center gap-4 text-sm text-slate-600">
+            <div class="flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span>15 menit</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="23 7 16 12 23 17 23 7"/>
+                <rect width="15" height="14" x="1" y="5" rx="2" ry="2"/>
+              </svg>
+              <span>Video Tutorial</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
+              <span>Materi Bacaan</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Content -->
+        <article class="prose prose-slate max-w-none">
+          <h2 class="text-xl font-semibold text-slate-900 mb-4">Apa itu CSS Selectors?</h2>
+          <p class="text-slate-600 leading-relaxed mb-6">
+            CSS Selectors adalah pola yang digunakan untuk memilih elemen HTML yang ingin Anda styling. 
+            Selector memungkinkan Anda menargetkan elemen tertentu di halaman web dan menerapkan gaya CSS ke elemen tersebut.
+            Memahami berbagai jenis selector sangat penting untuk menulis CSS yang efisien dan mudah dipelihara.
+          </p>
+          
+          <h3 class="text-lg font-semibold text-slate-900 mb-3">Jenis-jenis CSS Selectors</h3>
+          
+          <!-- Selector Cards -->
+          <div class="grid gap-4 mb-8">
+            <!-- Element Selector -->
+            <div class="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-md transition-shadow">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                  <span class="text-green-600 font-mono text-sm font-bold">p</span>
+                </div>
+                <div class="flex-1">
+                  <h4 class="font-semibold text-slate-900 mb-1">Element Selector</h4>
+                  <p class="text-sm text-slate-600 mb-3">Memilih semua elemen dengan nama tag tertentu.</p>
+                  <div class="code-block p-4">
+                    <code>
+                      <span class="selector">p</span> {<br>
+                      &nbsp;&nbsp;<span class="property">color</span>: <span class="value">blue</span>;<br>
+                      &nbsp;&nbsp;<span class="property">font-size</span>: <span class="value">16px</span>;<br>
+                      }
+                    </code>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Class Selector -->
+            <div class="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-md transition-shadow">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                  <span class="text-green-600 font-mono text-sm font-bold">.cls</span>
+                </div>
+                <div class="flex-1">
+                  <h4 class="font-semibold text-slate-900 mb-1">Class Selector</h4>
+                  <p class="text-sm text-slate-600 mb-3">Memilih elemen dengan atribut class tertentu. Gunakan titik (.) sebelum nama class.</p>
+                  <div class="code-block p-4">
+                    <code>
+                      <span class="selector">.highlight</span> {<br>
+                      &nbsp;&nbsp;<span class="property">background-color</span>: <span class="value">yellow</span>;<br>
+                      &nbsp;&nbsp;<span class="property">padding</span>: <span class="value">10px</span>;<br>
+                      }
+                    </code>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- ID Selector -->
+            <div class="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-md transition-shadow">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
+                  <span class="text-amber-600 font-mono text-sm font-bold">#id</span>
+                </div>
+                <div class="flex-1">
+                  <h4 class="font-semibold text-slate-900 mb-1">ID Selector</h4>
+                  <p class="text-sm text-slate-600 mb-3">Memilih elemen dengan atribut id tertentu. Gunakan tanda pagar (#) sebelum nama id.</p>
+                  <div class="code-block p-4">
+                    <code>
+                      <span class="selector">#header</span> {<br>
+                      &nbsp;&nbsp;<span class="property">background</span>: <span class="value">#333</span>;<br>
+                      &nbsp;&nbsp;<span class="property">color</span>: <span class="value">white</span>;<br>
+                      }
+                    </code>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Descendant Selector -->
+            <div class="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-md transition-shadow">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-lg bg-rose-100 flex items-center justify-center flex-shrink-0">
+                  <span class="text-rose-600 font-mono text-xs font-bold">a b</span>
+                </div>
+                <div class="flex-1">
+                  <h4 class="font-semibold text-slate-900 mb-1">Descendant Selector</h4>
+                  <p class="text-sm text-slate-600 mb-3">Memilih elemen yang merupakan keturunan dari elemen lain.</p>
+                  <div class="code-block p-4">
+                    <code>
+                      <span class="selector">nav a</span> {<br>
+                      &nbsp;&nbsp;<span class="property">text-decoration</span>: <span class="value">none</span>;<br>
+                      &nbsp;&nbsp;<span class="property">color</span>: <span class="value">inherit</span>;<br>
+                      }
+                    </code>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Practice Section -->
+          <div class="bg-green-50 rounded-2xl p-6 mb-8">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-xl bg-green-500 flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-slate-900 mb-2">Latihan Praktik</h3>
+                <p class="text-slate-600 mb-4">
+                  Coba praktikkan selector-selector di atas dengan mengerjakan latihan interaktif di bawah ini. 
+                  Anda akan belajar cara menggunakan berbagai selector untuk styling elemen HTML.
+                </p>
+                <button class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-medium px-5 py-2.5 rounded-lg transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="5 3 19 12 5 21 5 3"/>
+                  </svg>
+                  Mulai Latihan
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Key Points -->
+          <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-8">
+            <h3 class="flex items-center gap-2 text-lg font-semibold text-amber-900 mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2v8"/>
+                <path d="m4.93 10.93 1.41 1.41"/>
+                <path d="M2 18h2"/>
+                <path d="M20 18h2"/>
+                <path d="m19.07 10.93-1.41 1.41"/>
+                <path d="M22 22H2"/>
+                <path d="m8 22 4-10 4 10"/>
+              </svg>
+              Poin Penting
+            </h3>
+            <ul class="space-y-2 text-amber-800">
+              <li class="flex items-start gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 flex-shrink-0">
+                  <path d="M20 6 9 17l-5-5"/>
+                </svg>
+                <span>ID selector memiliki spesifisitas lebih tinggi dari class selector</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 flex-shrink-0">
+                  <path d="M20 6 9 17l-5-5"/>
+                </svg>
+                <span>Gunakan class selector untuk styling yang dapat digunakan kembali</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 flex-shrink-0">
+                  <path d="M20 6 9 17l-5-5"/>
+                </svg>
+                <span>Hindari penggunaan ID selector yang berlebihan untuk styling</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 flex-shrink-0">
+                  <path d="M20 6 9 17l-5-5"/>
+                </svg>
+                <span>Selector yang lebih spesifik akan menimpa selector yang kurang spesifik</span>
+              </li>
+            </ul>
+          </div>
+        </article>
+        
+        <!-- Mark Complete & Navigation -->
+        <div class="border-t border-slate-200 pt-8 mt-8">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <button id="markComplete" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-success-500 hover:bg-success-600 text-white font-medium px-6 py-3 rounded-xl transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6 9 17l-5-5"/>
+              </svg>
+              Tandai Selesai & Lanjutkan
+            </button>
+            
+            <div class="flex items-center gap-3">
+              <a href="#" class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 font-medium px-4 py-2 rounded-lg hover:bg-slate-100 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m15 18-6-6 6-6"/>
+                </svg>
+                Sebelumnya
+              </a>
+              <a href="#" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-medium px-4 py-2 rounded-lg transition-colors">
+                Selanjutnya
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Resources Section -->
+        <div class="mt-12 bg-white rounded-2xl border border-slate-200 p-6">
+          <h3 class="text-lg font-semibold text-slate-900 mb-4">Sumber Tambahan</h3>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <a href="#" class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-green-300 hover:bg-green-50 transition-colors group">
+              <div class="w-10 h-10 rounded-lg bg-slate-100 group-hover:bg-green-100 flex items-center justify-center transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-600 group-hover:text-green-600">
+                  <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+                </svg>
+              </div>
+              <div>
+                <p class="font-medium text-slate-900 group-hover:text-green-700">MDN CSS Selectors</p>
+                <p class="text-sm text-slate-500">Dokumentasi lengkap</p>
+              </div>
+            </a>
+            <a href="#" class="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-green-300 hover:bg-green-50 transition-colors group">
+              <div class="w-10 h-10 rounded-lg bg-slate-100 group-hover:bg-green-100 flex items-center justify-center transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-600 group-hover:text-green-600">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" x2="12" y1="15" y2="3"/>
+                </svg>
+              </div>
+              <div>
+                <p class="font-medium text-slate-900 group-hover:text-green-700">Download Cheatsheet</p>
+                <p class="text-sm text-slate-500">PDF, 2 halaman</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <!-- Mobile Bottom Navigation -->
+  <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-3 z-50">
+    <div class="flex items-center justify-between gap-4">
+      <button class="flex-1 flex items-center justify-center gap-2 text-slate-600 font-medium py-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+        Sebelumnya
+      </button>
+      <button class="flex-shrink-0 w-12 h-12 rounded-full bg-success-500 flex items-center justify-center text-white shadow-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6 9 17l-5-5"/>
+        </svg>
+      </button>
+      <button class="flex-1 flex items-center justify-center gap-2 text-slate-900 font-medium py-2">
+        Selanjutnya
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m9 18 6-6-6-6"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+  
+  <!-- Add padding for mobile bottom nav -->
+  <div class="lg:hidden h-20"></div>
+
+</body>
+</html>

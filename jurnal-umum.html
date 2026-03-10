@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jurnal Umum — FinLearn</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #f7f6f3;
+        --card: #fff;
+        --border: #e8e4dc;
+        --text: #1a1814;
+        --muted: #7a756b;
+
+        --primary: #16a34a;
+        --primary-dark: #15803d;
+        --primary-light: #dcfce7;
+
+        --danger: #dc2626;
+        --danger-light: #fee2e2;
+
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+        --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
+      }
+
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        font-size: 15px;
+      }
+
+      .main {
+        width: 100%;
+      }
+
+      .content {
+        padding: 28px;
+        max-width: 1400px;
+        margin: auto;
+      }
+
+      .page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .page-title {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .page-sub {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 3px;
+      }
+
+      /* SUMMARY */
+
+      .summary-row {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      .summary-pill {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 18px;
+        flex: 1;
+        min-width: 160px;
+      }
+
+      .pill-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+
+      .pill-val {
+        font-size: 17px;
+        font-weight: 700;
+        font-family: "DM Mono", monospace;
+      }
+
+      .pill-lbl {
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      /* FILTER */
+
+      .filter-bar {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .search-wrap {
+        position: relative;
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .search-input {
+        width: 100%;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        padding: 9px 12px 9px 38px;
+        font-size: 13px;
+        background: var(--bg);
+        outline: none;
+      }
+
+      .filter-select {
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        padding: 9px 14px;
+        font-size: 13px;
+        background: var(--bg);
+        cursor: pointer;
+      }
+
+      /* TABLE */
+
+      .table-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+
+      .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+      }
+
+      thead {
+        background: var(--bg);
+      }
+
+      thead th {
+        padding: 12px 16px;
+        text-align: left;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+        white-space: nowrap;
+        border-bottom: 1px solid var(--border);
+      }
+
+      tbody td {
+        padding: 13px 16px;
+        font-size: 13px;
+      }
+
+      tbody tr {
+        border-bottom: 1px solid var(--border);
+      }
+
+      tbody tr:hover {
+        background: var(--bg);
+      }
+
+      .td-mono {
+        font-family: "DM Mono", monospace;
+        font-size: 12px;
+      }
+
+      .td-debet {
+        font-family: "DM Mono", monospace;
+        color: var(--primary-dark);
+        font-weight: 600;
+      }
+
+      .td-kredit {
+        font-family: "DM Mono", monospace;
+        color: var(--danger);
+        font-weight: 600;
+      }
+
+      /* PAGINATION */
+
+      .pagination {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 20px;
+        border-top: 1px solid var(--border);
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .page-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 7px;
+        border: 1.5px solid var(--border);
+        background: var(--bg);
+        font-size: 12px;
+        cursor: pointer;
+      }
+
+      /* MODAL */
+
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        z-index: 100;
+      }
+
+      .modal-overlay.show {
+        display: flex;
+      }
+
+      .modal {
+        background: var(--card);
+        border-radius: 20px;
+        width: 100%;
+        max-width: 540px;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .modal-header {
+        padding: 22px 24px 16px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .modal-body {
+        padding: 20px 24px;
+      }
+
+      .modal-footer {
+        padding: 16px 24px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+      }
+
+      /* ENTRY ROW */
+
+      .entry-row {
+        display: grid;
+        grid-template-columns: 2fr 2fr 1fr 1fr auto;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 8px;
+        padding: 10px 12px;
+        background: var(--bg);
+        border-radius: 10px;
+      }
+
+      .entry-row input,
+      .entry-row select {
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        padding: 7px 10px;
+        font-size: 12px;
+        font-family: "DM Mono", monospace;
+        width: 100%;
+      }
+
+      /* =========================
+RESPONSIVE IMPROVEMENTS
+========================= */
+
+      /* tablet */
+      @media (max-width: 1024px) {
+        .content {
+          padding: 22px;
+        }
+
+        .summary-pill {
+          flex: 1 1 calc(50% - 12px);
+        }
+      }
+
+      /* mobile */
+
+      @media (max-width: 768px) {
+        .content {
+          padding: 18px;
+        }
+
+        .page-title {
+          font-size: 20px;
+        }
+
+        .summary-row {
+          flex-direction: column;
+        }
+
+        .summary-pill {
+          width: 100%;
+        }
+
+        .filter-bar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .search-wrap {
+          width: 100%;
+        }
+
+        .filter-select {
+          width: 100%;
+        }
+
+        .pagination {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .modal {
+          max-width: 100%;
+        }
+
+        .entry-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* small phone */
+
+      @media (max-width: 480px) {
+        body {
+          font-size: 14px;
+        }
+
+        .content {
+          padding: 14px;
+        }
+
+        thead th,
+        tbody td {
+          padding: 10px 12px;
+        }
+
+        .modal-header,
+        .modal-body,
+        .modal-footer {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="main">
+      <div class="content">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Jurnal Umum</div>
+            <div class="page-sub">
+              Pencatatan transaksi keuangan secara kronologis
+            </div>
+          </div>
+        </div>
+
+        <div class="summary-row">
+          <div class="summary-pill">
+            <div class="pill-icon" style="background: #dcfce7">📝</div>
+            <div>
+              <div class="pill-val">24</div>
+              <div class="pill-lbl">Total Entri</div>
+            </div>
+          </div>
+
+          <div class="summary-pill">
+            <div class="pill-icon" style="background: #dcfce7">⬆️</div>
+            <div>
+              <div class="pill-val">52.450.000</div>
+              <div class="pill-lbl">Total Debet</div>
+            </div>
+          </div>
+
+          <div class="summary-pill">
+            <div class="pill-icon" style="background: #fee2e2">⬇️</div>
+            <div>
+              <div class="pill-val">52.450.000</div>
+              <div class="pill-lbl">Total Kredit</div>
+            </div>
+          </div>
+
+          <div class="summary-pill">
+            <div class="pill-icon" style="background: #dcfce7">✅</div>
+            <div>
+              <div class="pill-val">Balance</div>
+              <div class="pill-lbl">Status Jurnal</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <div class="search-wrap">
+            <input
+              type="text"
+              class="search-input"
+              placeholder="Cari keterangan, akun, nomor ref..."
+            />
+          </div>
+
+          <select class="filter-select">
+            <option>Semua Bulan</option>
+            <option>Januari</option>
+            <option>Februari</option>
+          </select>
+
+          <select class="filter-select">
+            <option>Semua Akun</option>
+            <option>Aset</option>
+            <option>Kewajiban</option>
+          </select>
+
+          <input type="date" class="filter-select" />
+        </div>
+
+        <div class="table-card">
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>No. Ref</th>
+                  <th>Keterangan</th>
+                  <th>Akun</th>
+                  <th>Jenis</th>
+                  <th>Debet</th>
+                  <th>Kredit</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td>2025-06-26</td>
+                  <td>JU-2025-024</td>
+                  <td>Penerimaan pembayaran piutang</td>
+                  <td>Kas</td>
+                  <td>Aset</td>
+                  <td class="td-debet">5.000.000</td>
+                  <td></td>
+                  <td>-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination">
+            <div>Menampilkan 1–10 dari 24</div>
+
+            <div>
+              <button class="page-btn">‹</button>
+              <button class="page-btn">1</button>
+              <button class="page-btn">2</button>
+              <button class="page-btn">›</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

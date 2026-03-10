@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — FinLearn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f7f6f3;
+      --card: #ffffff;
+      --border: #e8e4dc;
+      --text: #1a1814;
+      --muted: #7a756b;
+      --primary: #16a34a;
+      --primary-dark: #15803d;
+      --primary-light: #dcfce7;
+      --primary-lighter: #f0fdf4;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --accent: #f59e0b;
+      --accent-light: #fef3c7;
+      --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,.10);
+      --sidebar-w: 0px; /* Ditambahkan agar var(--sidebar-w) memiliki nilai default */
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 15px;
+      display: flex;
+    }
+
+    
+    .logo-icon {
+      width: 34px; height: 34px; border-radius: 10px;
+      background: var(--primary);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .logo-icon svg { width: 18px; height: 18px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 10px;
+      text-decoration: none; color: var(--muted);
+      font-size: 14px; font-weight: 500;
+      transition: all .15s; margin-bottom: 2px;
+      cursor: pointer; border: none; background: none; width: 100%; text-align: left;
+    }
+    .nav-item svg { width: 17px; height: 17px; flex-shrink: 0; }
+    .nav-item:hover { background: var(--bg); color: var(--text); }
+    .nav-item.active {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+    .nav-item .badge {
+      margin-left: auto;
+      background: var(--primary-light); color: var(--primary-dark);
+      font-size: 11px; font-weight: 700;
+      padding: 2px 7px; border-radius: 999px;
+    }
+    .user-av {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--primary); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; flex-shrink: 0;
+    }
+    .user-info { flex: 1; min-width: 0; }
+    .user-name { font-size: 13px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+    .user-role { font-size: 11px; color: var(--muted); }
+
+    /* ── MAIN ── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      width: 100%; /* Memastikan tidak melebihi lebar layar */
+    }
+    .topbar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 40;
+    }
+    .topbar-title { font-size: 16px; font-weight: 700; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .topbar-btn {
+      width: 36px; height: 36px; border-radius: 9px;
+      border: 1px solid var(--border); background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all .15s; color: var(--muted);
+      position: relative;
+    }
+    .topbar-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+    .topbar-btn svg { width: 17px; height: 17px; }
+    .notif-dot {
+      position: absolute; top: 6px; right: 6px;
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--danger); border: 1.5px solid var(--card);
+    }
+    .topbar-date { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+    /* ── CONTENT ── */
+    .content { padding: 28px; flex: 1; width: 100%; }
+
+    /* ── STAT CARDS ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 22px;
+      transition: box-shadow .2s;
+    }
+    .stat-card:hover { box-shadow: var(--shadow-lg); }
+    .stat-card-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .stat-icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .stat-trend {
+      font-size: 12px; font-weight: 600; padding: 3px 8px;
+      border-radius: 999px; display: flex; align-items: center; gap: 3px;
+    }
+    .stat-trend.up { background: var(--primary-light); color: var(--primary-dark); }
+    .stat-trend.down { background: var(--danger-light); color: var(--danger); }
+    .stat-val {
+      font-size: 26px; font-weight: 700;
+      font-family: 'Playfair Display', serif;
+      letter-spacing: -0.02em; margin-bottom: 4px;
+    }
+    .stat-lbl { font-size: 12px; color: var(--muted); font-weight: 500; }
+
+    /* ── CHART CARD ── */
+    .grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .grid-2-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px 24px;
+      overflow: hidden; /* Mencegah konten luber */
+    }
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .card-title { font-size: 15px; font-weight: 700; }
+    .card-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .card-action {
+      font-size: 13px; color: var(--primary); font-weight: 600;
+      text-decoration: none; cursor: pointer; border: none; background: none;
+      transition: opacity .15s;
+    }
+    .card-action:hover { opacity: .75; }
+
+    /* Bar Chart */
+    .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 140px; }
+    .bar-group { flex: 1; display: flex; gap: 3px; align-items: flex-end; }
+    .bar {
+      flex: 1; border-radius: 4px 4px 0 0;
+      transition: opacity .2s; cursor: pointer;
+    }
+    .bar:hover { opacity: .8; }
+    .bar.income { background: var(--primary); }
+    .bar.expense { background: #bbf7d0; }
+    .bar-labels {
+      display: flex; gap: 8px; margin-top: 10px;
+      font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace;
+    }
+    .bar-labels span { flex: 1; text-align: center; }
+    .chart-legend { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+    /* Donut Chart */
+    .donut-wrap { display: flex; align-items: center; gap: 24px; }
+    .donut-svg { flex-shrink: 0; }
+    .donut-legend { display: flex; flex-direction: column; gap: 10px; flex: 1; width: 100%; }
+    .donut-item { display: flex; align-items: center; justify-content: space-between; }
+    .donut-lbl { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+    .donut-color { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+    .donut-val { font-size: 13px; font-weight: 600; font-family: 'DM Mono', monospace; }
+
+    /* Recent Transactions */
+    .tx-list { display: flex; flex-direction: column; gap: 2px; }
+    .tx-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 10px;
+      transition: background .15s;
+    }
+    .tx-item:hover { background: var(--bg); }
+    .tx-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .tx-info { flex: 1; min-width: 0; }
+    .tx-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tx-date { font-size: 11px; color: var(--muted); }
+    .tx-amount { font-size: 14px; font-weight: 700; font-family: 'DM Mono', monospace; white-space: nowrap; }
+    .tx-amount.credit { color: var(--primary-dark); }
+    .tx-amount.debit { color: var(--danger); }
+
+    /* Progress list */
+    .progress-list { display: flex; flex-direction: column; gap: 14px; }
+    .progress-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .progress-name { font-size: 13px; font-weight: 600; }
+    .progress-pct { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; }
+    .progress-bar { height: 6px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 999px; background: var(--primary); }
+    .progress-fill.amber { background: var(--accent); }
+    .progress-fill.red { background: var(--danger); }
+
+    /* Quick actions */
+    .quick-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .quick-btn {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 14px; border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: var(--bg); color: var(--text);
+      text-decoration: none; font-size: 13px; font-weight: 600;
+      transition: all .15s; cursor: pointer;
+    }
+    .quick-btn:hover { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); }
+    .quick-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .quick-btn-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; flex-shrink: 0;
+    }
+    
+    /* ── RESPONSIVE MEDIA QUERIES ── */
+    @media (max-width: 1100px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 900px) {
+      /* Grid 2 dan Grid 2 Equal diubah menjadi 1 kolom agar tidak gepeng */
+      .grid-2, .grid-2-equal { grid-template-columns: 1fr; } 
+    }
+    @media (max-width: 768px) {
+      .main { margin-left: 0; }
+      .content { padding: 16px; } /* Padding diperkecil di HP */
+      .mobile-menu-btn { display: flex; }
+    }
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .card-header { flex-direction: column; align-items: flex-start; gap: 12px; } /* Mencegah judul dan tombol nabrak */
+      .donut-wrap { flex-direction: column; align-items: center; } /* Chart donut ditumpuk atas-bawah */
+      .quick-actions { grid-template-columns: 1fr; } /* Tombol aksi cepat ditumpuk menjadi 1 kolom */
+    }
+  </style>
+</head>
+<body>
+<div class="main">
+  <div class="content">
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-icon" style="background:#dcfce7">💰</div>
+          <span class="stat-trend up">▲ 12.5%</span>
+        </div>
+        <div class="stat-val">Rp 42,5Jt</div>
+        <div class="stat-lbl">Total Pendapatan</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-icon" style="background:#fee2e2">📉</div>
+          <span class="stat-trend down">▼ 3.2%</span>
+        </div>
+        <div class="stat-val">Rp 28,1Jt</div>
+        <div class="stat-lbl">Total Pengeluaran</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-icon" style="background:#dcfce7">📊</div>
+          <span class="stat-trend up">▲ 8.7%</span>
+        </div>
+        <div class="stat-val">Rp 14,4Jt</div>
+        <div class="stat-lbl">Laba Bersih</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-icon" style="background:#fef3c7">🏦</div>
+          <span class="stat-trend up">▲ 5.1%</span>
+        </div>
+        <div class="stat-val">Rp 67,2Jt</div>
+        <div class="stat-lbl">Total Aset</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Pendapatan vs Pengeluaran</div>
+            <div class="card-sub">Januari – Juni 2025</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select style="font-size:12px;border:1px solid var(--border);border-radius:8px;padding:5px 10px;background:var(--bg);color:var(--text);font-family:inherit;cursor:pointer;outline:none">
+              <option>2025</option><option>2024</option>
+            </select>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--primary)"></div> Pendapatan</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#bbf7d0"></div> Pengeluaran</div>
+        </div>
+        <div class="bar-chart" id="barChart"></div>
+        <div class="bar-labels" id="barLabels"></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Komposisi Biaya</div>
+              <div class="card-sub">Bulan ini</div>
+            </div>
+          </div>
+          <div class="donut-wrap">
+            <svg class="donut-svg" width="100" height="100" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#f0fdf4" stroke-width="16"/>
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#16a34a" stroke-width="16" stroke-dasharray="95 144" stroke-dashoffset="0" stroke-linecap="round"/>
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#4ade80" stroke-width="16" stroke-dasharray="55 144" stroke-dashoffset="-95" stroke-linecap="round"/>
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#f59e0b" stroke-width="16" stroke-dasharray="30 144" stroke-dashoffset="-150" stroke-linecap="round"/>
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#fde68a" stroke-width="16" stroke-dasharray="20 144" stroke-dashoffset="-180" stroke-linecap="round"/>
+              <text x="50" y="46" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1814" font-family="DM Sans">38.5%</text>
+              <text x="50" y="58" text-anchor="middle" font-size="8" fill="#7a756b" font-family="DM Sans">Operasional</text>
+            </svg>
+            <div class="donut-legend">
+              <div class="donut-item">
+                <div class="donut-lbl"><div class="donut-color" style="background:#16a34a"></div>Operasional</div>
+                <div class="donut-val">38.5%</div>
+              </div>
+              <div class="donut-item">
+                <div class="donut-lbl"><div class="donut-color" style="background:#4ade80"></div>Gaji & SDM</div>
+                <div class="donut-val">22.1%</div>
+              </div>
+              <div class="donut-item">
+                <div class="donut-lbl"><div class="donut-color" style="background:#f59e0b"></div>Pemasaran</div>
+                <div class="donut-val">12.0%</div>
+              </div>
+              <div class="donut-item">
+                <div class="donut-lbl"><div class="donut-color" style="background:#fde68a"></div>Lainnya</div>
+                <div class="donut-val">8.0%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:12px">Aksi Cepat</div>
+          <div class="quick-actions">
+            <a href="input-keuangan.html" class="quick-btn">
+              <div class="quick-btn-icon" style="background:#dcfce7">➕</div>
+              Input Data
+            </a>
+            <a href="jurnal-umum.html" class="quick-btn">
+              <div class="quick-btn-icon" style="background:#fef3c7">📋</div>
+              Jurnal
+            </a>
+            <a href="laba-rugi.html" class="quick-btn">
+              <div class="quick-btn-icon" style="background:#dcfce7">📈</div>
+              Laba Rugi
+            </a>
+            <a href="pembelajaran.html" class="quick-btn">
+              <div class="quick-btn-icon" style="background:#f0fdf4">🎓</div>
+              Belajar
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2-equal">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Transaksi Terbaru</div>
+            <div class="card-sub">10 transaksi terakhir</div>
+          </div>
+          <a href="jurnal-umum.html" class="card-action">Lihat semua →</a>
+        </div>
+        <div class="tx-list">
+          <div class="tx-item">
+            <div class="tx-icon" style="background:#dcfce7">🏢</div>
+            <div class="tx-info">
+              <div class="tx-name">Pendapatan Jasa</div>
+              <div class="tx-date">Hari ini, 09:30</div>
+            </div>
+            <div class="tx-amount credit">+5.000.000</div>
+          </div>
+          <div class="tx-item">
+            <div class="tx-icon" style="background:#fee2e2">🛒</div>
+            <div class="tx-info">
+              <div class="tx-name">Pembelian Bahan Baku</div>
+              <div class="tx-date">Kemarin, 14:20</div>
+            </div>
+            <div class="tx-amount debit">-1.500.000</div>
+          </div>
+          <div class="tx-item">
+            <div class="tx-icon" style="background:#fef3c7">💼</div>
+            <div class="tx-info">
+              <div class="tx-name">Gaji Karyawan</div>
+              <div class="tx-date">25 Jun, 08:00</div>
+            </div>
+            <div class="tx-amount debit">-8.000.000</div>
+          </div>
+          <div class="tx-item">
+            <div class="tx-icon" style="background:#dcfce7">📦</div>
+            <div class="tx-info">
+              <div class="tx-name">Penjualan Produk</div>
+              <div class="tx-date">24 Jun, 16:45</div>
+            </div>
+            <div class="tx-amount credit">+3.200.000</div>
+          </div>
+          <div class="tx-item">
+            <div class="tx-icon" style="background:#fee2e2">💡</div>
+            <div class="tx-info">
+              <div class="tx-name">Biaya Listrik & Air</div>
+              <div class="tx-date">23 Jun, 11:00</div>
+            </div>
+            <div class="tx-amount debit">-450.000</div>
+          </div>
+          <div class="tx-item">
+            <div class="tx-icon" style="background:#dcfce7">🤝</div>
+            <div class="tx-info">
+              <div class="tx-name">Piutang Diterima</div>
+              <div class="tx-date">22 Jun, 13:15</div>
+            </div>
+            <div class="tx-amount credit">+2.750.000</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Progress Belajar</div>
+              <div class="card-sub">Modul aktif Anda</div>
+            </div>
+            <a href="pembelajaran.html" class="card-action">Lanjut →</a>
+          </div>
+          <div class="progress-list">
+            <div class="progress-item">
+              <div class="progress-row">
+                <span class="progress-name">Dasar Laporan Keuangan</span>
+                <span class="progress-pct">75%</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-row">
+                <span class="progress-name">Analisis Rasio Keuangan</span>
+                <span class="progress-pct">40%</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill amber" style="width:40%"></div></div>
+            </div>
+            <div class="progress-item">
+              <div class="progress-row">
+                <span class="progress-name">Standar PSAK / IFRS</span>
+                <span class="progress-pct">10%</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill red" style="width:10%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Anggaran Bulanan</div>
+              <div class="card-sub">Juni 2025</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:10px">
+              <div>
+                <div style="font-size:13px;font-weight:600">Total Anggaran</div>
+                <div style="font-size:11px;color:var(--muted)">Ditetapkan awal bulan</div>
+              </div>
+              <div style="font-size:16px;font-weight:700;font-family:'DM Mono',monospace">Rp 35Jt</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--primary-lighter);border-radius:10px">
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--primary-dark)">Sudah Terpakai</div>
+                <div style="font-size:11px;color:var(--primary)">80.3% dari anggaran</div>
+              </div>
+              <div style="font-size:16px;font-weight:700;font-family:'DM Mono',monospace;color:var(--primary-dark)">Rp 28,1Jt</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#fef3c7;border-radius:10px">
+              <div>
+                <div style="font-size:13px;font-weight:600;color:#92400e">Sisa Anggaran</div>
+                <div style="font-size:11px;color:#b45309">19.7% tersisa</div>
+              </div>
+              <div style="font-size:16px;font-weight:700;font-family:'DM Mono',monospace;color:#b45309">Rp 6,9Jt</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div></div><script>
+  // Date display - Ditambahkan pengecekan elemen agar script tidak error jika ID 'dateDisplay' tidak ada
+  const d = new Date();
+  const dateEl = document.getElementById('dateDisplay');
+  if (dateEl) {
+    dateEl.textContent = d.toLocaleDateString('id-ID', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+  }
+
+  // Bar chart data
+  const months = ['Jan','Feb','Mar','Apr','Mei','Jun'];
+  const income =  [32, 28, 38, 42, 36, 45];
+  const expense = [22, 25, 30, 28, 24, 28];
+  const max = Math.max(...income, ...expense);
+  const bc = document.getElementById('barChart');
+  const bl = document.getElementById('barLabels');
+  
+  // Pastikan elemen chart ada sebelum menggambar
+  if (bc && bl) {
+    months.forEach((m, i) => {
+      const g = document.createElement('div');
+      g.className = 'bar-group';
+      g.innerHTML = `
+        <div class="bar income" style="height:${(income[i]/max)*100}%" title="Pendapatan: Rp ${income[i]}Jt"></div>
+        <div class="bar expense" style="height:${(expense[i]/max)*100}%" title="Pengeluaran: Rp ${expense[i]}Jt"></div>`;
+      bc.appendChild(g);
+      const s = document.createElement('span');
+      s.textContent = m;
+      bl.appendChild(s);
+    });
+  }
+</script>
+</body>
+</html>

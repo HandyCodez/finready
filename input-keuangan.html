@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Input Keuangan — FinLearn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f7f6f3; --card: #fff; --border: #e8e4dc;
+      --text: #1a1814; --muted: #7a756b;
+      --primary: #16a34a; --primary-dark: #15803d;
+      --primary-light: #dcfce7; --primary-lighter: #f0fdf4;
+      --danger: #dc2626; --danger-light: #fee2e2;
+      --accent: #f59e0b; --accent-light: #fef3c7;
+      --sidebar-w: 240px;
+      --shadow-lg: 0 8px 32px rgba(0,0,0,.10);
+    }
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; font-size:15px; }
+
+    /* PAGE */
+    .page-title { font-size:22px; font-weight:700; letter-spacing:-0.02em; margin-bottom:4px; }
+    .page-sub { font-size:13px; color:var(--muted); margin-bottom:28px; }
+
+    /* TAB */
+    .tabs { display:flex; gap:4px; margin-bottom:24px; background:var(--card); padding:6px; border-radius:14px; border:1px solid var(--border); width:fit-content; }
+    .tab-btn { padding:9px 18px; border-radius:10px; border:none; font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; transition:all .18s; color:var(--muted); background:transparent; display:flex; align-items:center; gap:7px; }
+    .tab-btn.active { background:var(--primary); color:#fff; box-shadow:0 2px 8px rgba(22,163,74,.3); }
+    .tab-btn:not(.active):hover { background:var(--bg); color:var(--text); }
+
+    /* FORM */
+    .form-card { background:var(--card); border:1px solid var(--border); border-radius:20px; overflow:hidden; margin-bottom:24px; }
+    .form-section { padding:24px; border-bottom:1px solid var(--border); }
+    .form-section:last-child { border-bottom:none; }
+    .section-header { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+    .section-num { width:28px; height:28px; border-radius:8px; background:var(--primary-light); color:var(--primary-dark); font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .section-title { font-size:15px; font-weight:700; }
+    .section-sub { font-size:12px; color:var(--muted); margin-top:1px; }
+    .form-grid { display:grid; gap:16px; }
+    .form-grid-2 { grid-template-columns:1fr 1fr; }
+    .form-grid-3 { grid-template-columns:1fr 1fr 1fr; }
+    .form-group { display:flex; flex-direction:column; gap:6px; }
+    .form-label { font-size:12px; font-weight:700; color:var(--muted); letter-spacing:.03em; text-transform:uppercase; }
+    .form-label span { color:var(--danger); margin-left:2px; }
+    .form-input, .form-select { border:1.5px solid var(--border); border-radius:11px; padding:11px 14px; font-size:14px; font-family:inherit; color:var(--text); background:var(--bg); outline:none; transition:all .15s; }
+    .form-input:focus, .form-select:focus { border-color:var(--primary); background:#fff; box-shadow:0 0 0 3px rgba(22,163,74,.1); }
+    .form-input.mono { font-family:'DM Mono',monospace; }
+    .form-input::placeholder { color:#bbb; }
+    .input-prefix { position:relative; }
+    .input-prefix .prefix { position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:13px; font-weight:600; color:var(--muted); font-family:'DM Mono',monospace; pointer-events:none; }
+    .input-prefix .form-input { padding-left:40px; }
+    .form-textarea { border:1.5px solid var(--border); border-radius:11px; padding:11px 14px; font-size:14px; font-family:inherit; color:var(--text); background:var(--bg); outline:none; transition:all .15s; resize:vertical; min-height:90px; width:100%; }
+    .form-textarea:focus { border-color:var(--primary); background:#fff; box-shadow:0 0 0 3px rgba(22,163,74,.1); }
+    .field-hint { font-size:11px; color:var(--muted); margin-top:3px; }
+    .field-error { font-size:11px; color:var(--danger); margin-top:3px; display:none; }
+    .field-error.show { display:block; }
+
+    /* Kategori chips */
+    .chips { display:flex; flex-wrap:wrap; gap:8px; }
+    .chip-input { display:none; }
+    .chip-label { padding:7px 14px; border-radius:999px; border:1.5px solid var(--border); font-size:12px; font-weight:600; cursor:pointer; transition:all .15s; color:var(--muted); background:var(--bg); display:flex; align-items:center; gap:5px; }
+    .chip-input:checked + .chip-label { border-color:var(--primary); background:var(--primary-light); color:var(--primary-dark); }
+    .chip-label:hover { border-color:var(--primary); }
+
+    /* Preview card */
+    .preview-card { background:var(--primary-lighter); border:1.5px solid var(--primary-light); border-radius:16px; padding:20px; margin-bottom:24px; }
+    .preview-title { font-size:13px; font-weight:700; color:var(--primary-dark); margin-bottom:14px; display:flex; align-items:center; gap:7px; }
+    .preview-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+    .preview-item { background:#fff; border-radius:10px; padding:12px 14px; }
+    .preview-lbl { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px; }
+    .preview-val { font-size:15px; font-weight:700; font-family:'DM Mono',monospace; color:var(--text); }
+    .preview-val.green { color:var(--primary-dark); }
+    .preview-val.red { color:var(--danger); }
+
+    /* Recent entries */
+    .recent-title { font-size:15px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; }
+    .recent-list { display:flex; flex-direction:column; gap:2px; }
+    .recent-item { display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:11px; transition:background .12s; }
+    .recent-item:hover { background:var(--bg); }
+    .recent-icon { width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
+    .recent-info { flex:1; }
+    .recent-name { font-size:13px; font-weight:600; }
+    .recent-meta { font-size:11px; color:var(--muted); display:flex; gap:8px; margin-top:2px; }
+    .recent-tag { padding:1px 7px; border-radius:999px; font-size:10px; font-weight:700; }
+    .recent-amount { font-family:'DM Mono',monospace; font-size:14px; font-weight:700; }
+
+    /* Action buttons */
+    .form-actions { display:flex; gap:10px; justify-content:flex-end; padding:20px 24px; background:var(--card); border-top:1px solid var(--border); border-radius:0 0 20px 20px; }
+    .btn { display:inline-flex; align-items:center; gap:7px; padding:11px 22px; border-radius:11px; font-size:14px; font-weight:600; font-family:inherit; cursor:pointer; border:none; transition:all .15s; }
+    .btn-primary { background:var(--primary); color:#fff; }
+    .btn-primary:hover { background:var(--primary-dark); transform:translateY(-1px); box-shadow:0 4px 12px rgba(22,163,74,.3); }
+    .btn-outline { background:var(--bg); color:var(--text); border:1.5px solid var(--border); }
+    .btn-outline:hover { border-color:var(--primary); color:var(--primary); }
+    .btn-primary.loading { opacity:.75; pointer-events:none; }
+    .spinner { width:16px; height:16px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin .6s linear infinite; display:none; }
+    .btn-primary.loading .spinner { display:block; }
+    .btn-primary.loading .btn-text { display:none; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* Toast */
+    .toast { position:fixed; bottom:28px; right:28px; background:var(--text); color:#fff; padding:14px 20px; border-radius:14px; font-size:13px; font-weight:600; z-index:999; display:flex; align-items:center; gap:10px; transform:translateY(20px); opacity:0; transition:all .3s; box-shadow:var(--shadow-lg); }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { background:var(--primary-dark); }
+    .toast-icon { font-size:18px; }
+
+    @media (max-width:768px) {
+      .sidebar { transform:translateX(-100%); }
+      .sidebar.open { transform:translateX(0); box-shadow:var(--shadow-lg); }
+      .main { margin-left:0; }
+      .mobile-menu-btn { display:flex; }
+      .sidebar-overlay { display:block; position:fixed; inset:0; background:rgba(0,0,0,.3); z-index:49; opacity:0; pointer-events:none; transition:opacity .25s; }
+      .sidebar-overlay.show { opacity:1; pointer-events:auto; }
+      .content { padding:16px; }
+      .form-grid-2, .form-grid-3 { grid-template-columns:1fr; }
+      .preview-grid { grid-template-columns:1fr 1fr; }
+      .tabs { width:100%; overflow-x:auto; }
+    }
+  </style>
+</head>
+<body>
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<div class="main">
+  <div class="content">
+    <div class="page-title">Input Data Keuangan</div>
+    <div class="page-sub">Catat transaksi keuangan Anda dengan cepat dan akurat</div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('pendapatan', this)">💰 Pendapatan</button>
+      <button class="tab-btn" onclick="switchTab('pengeluaran', this)">💸 Pengeluaran</button>
+      <button class="tab-btn" onclick="switchTab('transfer', this)">🔄 Transfer</button>
+      <button class="tab-btn" onclick="switchTab('aset', this)">🏢 Aset/Kewajiban</button>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="preview-card" id="previewCard">
+      <div class="preview-title">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Preview Entri
+      </div>
+      <div class="preview-grid">
+        <div class="preview-item"><div class="preview-lbl">Jenis</div><div class="preview-val" id="pvJenis">Pendapatan</div></div>
+        <div class="preview-item"><div class="preview-lbl">Jumlah</div><div class="preview-val green" id="pvJumlah">Rp 0</div></div>
+        <div class="preview-item"><div class="preview-lbl">Tanggal</div><div class="preview-val" id="pvTanggal">—</div></div>
+        <div class="preview-item"><div class="preview-lbl">Akun</div><div class="preview-val" id="pvAkun">—</div></div>
+        <div class="preview-item"><div class="preview-lbl">Kategori</div><div class="preview-val" id="pvKat">—</div></div>
+        <div class="preview-item"><div class="preview-lbl">Metode</div><div class="preview-val" id="pvMetode">—</div></div>
+      </div>
+    </div>
+
+    <!-- FORM CARD -->
+    <div class="form-card" id="mainForm">
+
+      <!-- SECTION 1: Info Dasar -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-num">1</div>
+          <div><div class="section-title">Informasi Dasar</div><div class="section-sub">Data utama transaksi</div></div>
+        </div>
+        <div class="form-grid form-grid-3">
+          <div class="form-group">
+            <label class="form-label">Tanggal <span>*</span></label>
+            <input type="date" class="form-input" id="fTanggal" oninput="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nomor Referensi</label>
+            <input type="text" class="form-input mono" id="fRef" placeholder="TRX-2025-001" readonly style="background:#f7f6f3;color:var(--muted)">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Periode</label>
+            <select class="form-select" id="fPeriode">
+              <option>Juni 2025</option><option>Juli 2025</option><option>Mei 2025</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: Detail Transaksi -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-num">2</div>
+          <div><div class="section-title">Detail Transaksi</div><div class="section-sub">Jumlah dan klasifikasi</div></div>
+        </div>
+        <div class="form-grid form-grid-2" style="margin-bottom:16px">
+          <div class="form-group">
+            <label class="form-label">Jumlah <span>*</span></label>
+            <div class="input-prefix">
+              <span class="prefix">Rp</span>
+              <input type="text" class="form-input mono" id="fJumlah" placeholder="0" oninput="formatNumber(this); updatePreview()">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Akun <span>*</span></label>
+            <select class="form-select" id="fAkun" onchange="updatePreview()">
+              <option value="">— Pilih Akun —</option>
+              <optgroup label="Aset">
+                <option>Kas</option><option>Bank BCA</option><option>Bank Mandiri</option><option>Piutang Usaha</option><option>Persediaan</option>
+              </optgroup>
+              <optgroup label="Pendapatan">
+                <option>Pendapatan Jasa</option><option>Pendapatan Penjualan</option><option>Pendapatan Lain-lain</option>
+              </optgroup>
+              <optgroup label="Beban">
+                <option>Beban Gaji</option><option>Beban Sewa</option><option>Beban Listrik</option><option>Beban Operasional</option><option>Beban Pemasaran</option>
+              </optgroup>
+              <optgroup label="Kewajiban">
+                <option>Hutang Usaha</option><option>Hutang Bank</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:16px">
+          <label class="form-label">Kategori <span>*</span></label>
+          <div class="chips" id="katChips">
+            <input type="radio" name="kat" id="k1" class="chip-input" value="Operasional" onchange="updatePreview()"><label class="chip-label" for="k1">⚙️ Operasional</label>
+            <input type="radio" name="kat" id="k2" class="chip-input" value="Penjualan" onchange="updatePreview()"><label class="chip-label" for="k2">🛒 Penjualan</label>
+            <input type="radio" name="kat" id="k3" class="chip-input" value="Gaji & SDM" onchange="updatePreview()"><label class="chip-label" for="k3">👥 Gaji & SDM</label>
+            <input type="radio" name="kat" id="k4" class="chip-input" value="Pemasaran" onchange="updatePreview()"><label class="chip-label" for="k4">📣 Pemasaran</label>
+            <input type="radio" name="kat" id="k5" class="chip-input" value="Investasi" onchange="updatePreview()"><label class="chip-label" for="k5">📈 Investasi</label>
+            <input type="radio" name="kat" id="k6" class="chip-input" value="Lainnya" onchange="updatePreview()"><label class="chip-label" for="k6">📌 Lainnya</label>
+          </div>
+        </div>
+        <div class="form-grid form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Metode Pembayaran</label>
+            <select class="form-select" id="fMetode" onchange="updatePreview()">
+              <option value="">— Pilih —</option>
+              <option>Tunai</option><option>Transfer Bank</option><option>Kartu Debit</option>
+              <option>Kartu Kredit</option><option>Cek / Giro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Pihak Terkait</label>
+            <input type="text" class="form-input" id="fPihak" placeholder="Nama pelanggan/vendor">
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 3: Keterangan -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-num">3</div>
+          <div><div class="section-title">Keterangan & Dokumen</div><div class="section-sub">Catatan tambahan dan lampiran</div></div>
+        </div>
+        <div class="form-group" style="margin-bottom:16px">
+          <label class="form-label">Keterangan Transaksi <span>*</span></label>
+          <textarea class="form-textarea" id="fKet" placeholder="Tuliskan deskripsi lengkap transaksi ini..."></textarea>
+        </div>
+        <div class="form-grid form-grid-2">
+          <div class="form-group">
+            <label class="form-label">No. Faktur / Invoice</label>
+            <input type="text" class="form-input mono" id="fFaktur" placeholder="INV-2025-001">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Lampiran (Bukti)</label>
+            <input type="file" class="form-input" id="fFile" accept=".pdf,.jpg,.png" style="padding:8px 14px;cursor:pointer">
+            <span class="field-hint">PDF, JPG, PNG maks. 5MB</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-outline" onclick="resetForm()">Reset Form</button>
+        <button class="btn btn-outline" onclick="saveDraft()">Simpan Draft</button>
+        <button class="btn btn-primary" id="submitBtn" onclick="submitForm()">
+          <span class="btn-text">Simpan Transaksi</span>
+          <div class="spinner"></div>
+        </button>
+      </div>
+    </div>
+
+    <!-- RECENT ENTRIES -->
+    <div class="form-card" style="padding:22px 24px">
+      <div class="recent-title">
+        Transaksi Baru Diinput
+        <a href="jurnal-umum.html" style="font-size:13px;color:var(--primary);font-weight:600;text-decoration:none">Lihat Jurnal →</a>
+      </div>
+      <div class="recent-list" id="recentList">
+        <div class="recent-item">
+          <div class="recent-icon" style="background:#dcfce7">💰</div>
+          <div class="recent-info">
+            <div class="recent-name">Pendapatan Jasa Konsultasi</div>
+            <div class="recent-meta">
+              <span>Hari ini, 09:30</span>
+              <span class="recent-tag" style="background:#dcfce7;color:#15803d">Pendapatan</span>
+              <span>Bank BCA</span>
+            </div>
+          </div>
+          <div class="recent-amount" style="color:var(--primary-dark)">+5.000.000</div>
+        </div>
+        <div class="recent-item">
+          <div class="recent-icon" style="background:#fee2e2">💸</div>
+          <div class="recent-info">
+            <div class="recent-name">Pembelian Bahan Baku</div>
+            <div class="recent-meta">
+              <span>Kemarin, 14:20</span>
+              <span class="recent-tag" style="background:#fee2e2;color:#b91c1c">Pengeluaran</span>
+              <span>Tunai</span>
+            </div>
+          </div>
+          <div class="recent-amount" style="color:var(--danger)">-1.500.000</div>
+        </div>
+        <div class="recent-item">
+          <div class="recent-icon" style="background:#fef3c7">💼</div>
+          <div class="recent-info">
+            <div class="recent-name">Pembayaran Gaji Karyawan</div>
+            <div class="recent-meta">
+              <span>25 Jun, 08:00</span>
+              <span class="recent-tag" style="background:#fee2e2;color:#b91c1c">Pengeluaran</span>
+              <span>Transfer Bank</span>
+            </div>
+          </div>
+          <div class="recent-amount" style="color:var(--danger)">-8.000.000</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="toast-icon">✅</span><span id="toastMsg">Transaksi berhasil disimpan!</span></div>
+
+<script>
+  // Init date & ref
+  const d = new Date();
+  document.getElementById('fTanggal').value = d.toISOString().substring(0,10);
+  document.getElementById('dateDisplay').textContent = d.toLocaleDateString('id-ID',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  document.getElementById('fRef').value = 'TRX-2025-' + String(Math.floor(Math.random()*900)+100);
+
+  let activeTab = 'pendapatan';
+
+  function switchTab(tab, btn) {
+    activeTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const jenis = {pendapatan:'Pendapatan',pengeluaran:'Pengeluaran',transfer:'Transfer',aset:'Aset/Kewajiban'};
+    document.getElementById('pvJenis').textContent = jenis[tab];
+    const pvVal = document.getElementById('pvJumlah');
+    pvVal.className = 'preview-val ' + (tab==='pendapatan'||tab==='transfer'?'green':'red');
+    updatePreview();
+  }
+
+  function formatNumber(el) {
+    const raw = el.value.replace(/\D/g,'');
+    el.value = raw ? parseInt(raw).toLocaleString('id-ID') : '';
+  }
+
+  function updatePreview() {
+    const jumlah = document.getElementById('fJumlah').value.replace(/\./g,'') || 0;
+    const tgl = document.getElementById('fTanggal').value;
+    const akun = document.getElementById('fAkun').value;
+    const kat = document.querySelector('input[name=kat]:checked');
+    const metode = document.getElementById('fMetode').value;
+    document.getElementById('pvJumlah').textContent = 'Rp ' + (parseInt(jumlah)||0).toLocaleString('id-ID');
+    document.getElementById('pvTanggal').textContent = tgl ? new Date(tgl).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}) : '—';
+    document.getElementById('pvAkun').textContent = akun || '—';
+    document.getElementById('pvKat').textContent = kat ? kat.value : '—';
+    document.getElementById('pvMetode').textContent = metode || '—';
+  }
+
+  function resetForm() {
+    document.getElementById('fJumlah').value='';
+    document.getElementById('fAkun').value='';
+    document.getElementById('fKet').value='';
+    document.getElementById('fPihak').value='';
+    document.getElementById('fFaktur').value='';
+    document.querySelectorAll('input[name=kat]').forEach(r=>r.checked=false);
+    document.getElementById('fMetode').value='';
+    updatePreview();
+  }
+
+  function saveDraft() { showToast('Draft disimpan!','✏️'); }
+
+  function submitForm() {
+    const jumlah = document.getElementById('fJumlah').value;
+    const akun = document.getElementById('fAkun').value;
+    const ket = document.getElementById('fKet').value;
+    if (!jumlah || !akun || !ket) {
+      showToast('Lengkapi kolom wajib (*)','⚠️'); return;
+    }
+    const btn = document.getElementById('submitBtn');
+    btn.classList.add('loading');
+    setTimeout(() => {
+      btn.classList.remove('loading');
+      addToRecent();
+      resetForm();
+      showToast('Transaksi berhasil disimpan!','✅');
+    }, 1400);
+  }
+
+  function addToRecent() {
+    const jenis = {pendapatan:{icon:'💰',bg:'#dcfce7',color:'var(--primary-dark)',sign:'+'},pengeluaran:{icon:'💸',bg:'#fee2e2',color:'var(--danger)',sign:'-'},transfer:{icon:'🔄',bg:'#fef3c7',color:'var(--accent)',sign:''},aset:{icon:'🏢',bg:'#dcfce7',color:'var(--primary-dark)',sign:''}};
+    const t = jenis[activeTab];
+    const j = document.getElementById('fJumlah').value || '0';
+    const ket = document.getElementById('fKet').value || 'Transaksi baru';
+    const now = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+    const item = document.createElement('div');
+    item.className = 'recent-item';
+    item.style.background='var(--primary-lighter)';
+    item.innerHTML = `
+      <div class="recent-icon" style="background:${t.bg}">${t.icon}</div>
+      <div class="recent-info">
+        <div class="recent-name">${ket}</div>
+        <div class="recent-meta"><span>Hari ini, ${now}</span><span class="recent-tag" style="background:${t.bg};color:${t.color}">${activeTab.charAt(0).toUpperCase()+activeTab.slice(1)}</span></div>
+      </div>
+      <div class="recent-amount" style="color:${t.color}">${t.sign}${j}</div>`;
+    const list = document.getElementById('recentList');
+    list.insertBefore(item, list.firstChild);
+    setTimeout(()=>item.style.background='',1500);
+  }
+
+  function showToast(msg, icon='✅') {
+    const t = document.getElementById('toast');
+    const isSuccess = icon==='✅';
+    t.className = 'toast show' + (isSuccess?' success':'');
+    document.getElementById('toastMsg').textContent = msg;
+    t.querySelector('.toast-icon').textContent = icon;
+    setTimeout(()=>t.className='toast',3000);
+  }
+
+  function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('overlay').classList.add('show'); }
+  function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+
+  updatePreview();
+</script>
+</body>
+</html>

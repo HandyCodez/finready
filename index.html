@@ -884,12 +884,12 @@
           <a href="#kursus" class="hide-mobile">Kursus</a>
           <a href="#testimoni" class="hide-mobile">Testimoni</a>
 
-          <a class="btn btn-outline" href="#">
+          <button class="btn btn-outline" onclick="openModal('loginModal')">
             Masuk
-          </a>
+          </button>
 
-          <a href="#" class="btn btn-primary btn-hero"
-            >Daftar Gratis</a
+          <button onclick="openModal('registerModal')" class="btn btn-primary btn-hero"
+            >Daftar Gratis</button
           >
         </div>
       </div>
@@ -1320,7 +1320,7 @@
         <span>Made with ❤️ in Indonesia</span>
       </div>
     <!-- ROLE SELECTOR MODAL: REGISTER -->
-    <div class="modal-overlay" id="registerModal" onclick="handleOverlayClick(event,'dafftar gratisModal')">
+    <div class="modal-overlay" id="registerModal" onclick="handleOverlayClick(event,'registerModal')">
       <div class="role-modal">
         <div class="role-modal-header">
           <div>

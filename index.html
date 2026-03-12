@@ -134,6 +134,7 @@
       }
       .btn-primary:hover {
         background: #15803d;
+        color: #fff;
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
       }
@@ -788,6 +789,75 @@
       .dropdown-menu a:hover {
         background: #f5f5f5;
       }
+
+      /* ── ROLE SELECTOR MODAL ── */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.45);
+        z-index: 999;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        backdrop-filter: blur(3px);
+      }
+      .modal-overlay.show { display: flex; }
+      .role-modal {
+        background: var(--card);
+        border-radius: 24px;
+        width: 100%;
+        max-width: 460px;
+        box-shadow: 0 24px 64px rgba(0,0,0,.18);
+        animation: modalIn .22s ease;
+        overflow: hidden;
+      }
+      @keyframes modalIn {
+        from { transform: translateY(16px); opacity: 0; }
+        to   { transform: translateY(0);    opacity: 1; }
+      }
+      .role-modal-header {
+        padding: 28px 28px 0;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .role-modal-title { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; }
+      .role-modal-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+      .modal-close-btn {
+        width: 32px; height: 32px; border-radius: 8px;
+        border: 1.5px solid var(--border); background: var(--bg);
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        color: var(--muted); font-size: 18px; flex-shrink: 0;
+        transition: all .15s; line-height: 1;
+      }
+      .modal-close-btn:hover { background: var(--border); color: var(--text); }
+      .role-cards {
+        display: grid; grid-template-columns: 1fr 1fr;
+        gap: 14px; padding: 22px 28px 28px;
+      }
+      .role-card {
+        border: 2px solid var(--border); border-radius: 16px;
+        padding: 22px 16px; cursor: pointer; text-decoration: none;
+        color: var(--text); background: var(--bg);
+        display: flex; flex-direction: column; align-items: center;
+        text-align: center; gap: 10px; transition: all .18s;
+      }
+      .role-card:hover {
+        border-color: var(--primary); background: var(--primary-light);
+        transform: translateY(-2px); box-shadow: 0 8px 24px rgba(22,163,74,.15);
+      }
+      .role-card-icon {
+        width: 54px; height: 54px; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 26px; background: var(--card);
+        border: 1.5px solid var(--border); transition: all .18s;
+      }
+      .role-card:hover .role-card-icon { background: #dcfce7; border-color: var(--primary); }
+      .role-card-name { font-size: 15px; font-weight: 700; }
+      .role-card-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+      .role-card:hover .role-card-desc { color: #15803d; }
     </style>
   </head>
   <body>
@@ -814,17 +884,11 @@
           <a href="#kursus" class="hide-mobile">Kursus</a>
           <a href="#testimoni" class="hide-mobile">Testimoni</a>
 
-          <div class="dropdown">
-            <button class="btn btn-outline" onclick="toggleDropdown()">
-              Masuk
-            </button>
-            <div class="dropdown-menu" id="loginDropdown">
-              <a href="login.html">Login UMKM</a>
-              <a href="login-investor.html">Login Investor</a>
-            </div>
-          </div>
+          <a class="btn btn-outline" href="#">
+            Masuk
+          </a>
 
-          <a href="register.html" class="btn btn-primary" style="color: white"
+          <a href="#" class="btn btn-primary btn-hero"
             >Daftar Gratis</a
           >
         </div>
@@ -845,19 +909,12 @@
           menyenangkan.
         </p>
         <div class="hero-actions">
-          <a href="register.html" class="btn btn-primary btn-hero">
+          <button onclick="openModal('registerModal')" class="btn btn-primary btn-hero">
             Mulai Belajar Gratis
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-            >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <path d="m9 18 6-6-6-6" />
             </svg>
-          </a>
+          </button>
           <a href="#kursus" class="btn btn-outline btn-hero">Lihat Kursus</a>
         </div>
         <div class="hero-stats">
@@ -1208,12 +1265,8 @@
         keuangan mereka bersama FinReady.
       </p>
       <div class="cta-actions">
-        <a href="register.html" class="btn btn-white btn-hero"
-          >Daftar Gratis Sekarang</a
-        >
-        <a href="login.html" class="btn btn-ghost btn-hero"
-          >Sudah punya akun? Masuk</a
-        >
+        <button onclick="openModal('registerModal')" class="btn btn-white btn-hero">Daftar Gratis Sekarang</button>
+        <a href="login.html" class="btn btn-ghost btn-hero">Sudah punya akun? Masuk</a>
       </div>
     </div>
 
@@ -1266,12 +1319,77 @@
         <span>© 2024 FinReady. Hak cipta dilindungi.</span>
         <span>Made with ❤️ in Indonesia</span>
       </div>
-    </footer>
+    <!-- ROLE SELECTOR MODAL: REGISTER -->
+    <div class="modal-overlay" id="registerModal" onclick="handleOverlayClick(event,'dafftar gratisModal')">
+      <div class="role-modal">
+        <div class="role-modal-header">
+          <div>
+            <div class="role-modal-title">Daftar sebagai apa?</div>
+            <div class="role-modal-sub">Pilih peran Anda untuk memulai</div>
+          </div>
+          <button class="modal-close-btn" onclick="closeModal('registerModal')">✕</button>
+        </div>
+        <div class="role-cards">
+          <a href="register.html?role=umkm" class="role-card">
+            <div class="role-card-icon">🏪</div>
+            <div class="role-card-name">UMKM</div>
+            <div class="role-card-desc">Pemilik usaha yang ingin mengelola laporan keuangan</div>
+          </a>
+          <a href="register.html?role=investor" class="role-card">
+            <div class="role-card-icon">📈</div>
+            <div class="role-card-name">Investor</div>
+            <div class="role-card-desc">Investor yang ingin menganalisis peluang bisnis</div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROLE SELECTOR MODAL: LOGIN (Nav) -->
+    <div class="modal-overlay" id="loginModal" onclick="handleOverlayClick(event,'loginModal')">
+      <div class="role-modal">
+        <div class="role-modal-header">
+          <div>
+            <div class="role-modal-title">Masuk sebagai apa?</div>
+            <div class="role-modal-sub">Pilih peran Anda untuk melanjutkan</div>
+          </div>
+          <button class="modal-close-btn" onclick="closeModal('loginModal')">✕</button>
+        </div>
+        <div class="role-cards">
+          <a href="login.html?role=umkm" class="role-card">
+            <div class="role-card-icon">🏪</div>
+            <div class="role-card-name">UMKM</div>
+            <div class="role-card-desc">Login sebagai pemilik usaha</div>
+          </a>
+          <a href="login.html?role=investor" class="role-card">
+            <div class="role-card-icon">📈</div>
+            <div class="role-card-name">Investor</div>
+            <div class="role-card-desc">Login sebagai investor</div>
+          </a>
+        </div>
+      </div>
+    </div>
+
   </body>
   <script>
     function toggleDropdown() {
-      const menu = document.getElementById("loginDropdown");
-      menu.style.display = menu.style.display === "block" ? "none" : "block";
+      // replaced by modal
+      openModal('loginModal');
     }
+    function openModal(id) {
+      document.getElementById(id).classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('show');
+      document.body.style.overflow = '';
+    }
+    function handleOverlayClick(e, id) {
+      if (e.target === document.getElementById(id)) closeModal(id);
+    }
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        ['registerModal','loginModal'].forEach(closeModal);
+      }
+    });
   </script>
 </html>

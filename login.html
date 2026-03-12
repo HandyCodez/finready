@@ -1,0 +1,184 @@
+<!doctype html>
+<html class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login — FinReady</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: "class" };</script>
+    <style>
+      .role-tab { transition: all .18s; }
+      .role-tab.active { background: #16a34a; color: #fff; box-shadow: 0 2px 8px rgba(22,163,74,.3); }
+      .role-tab:not(.active) { color: #6b7280; background: transparent; }
+      .role-tab:not(.active):hover { background: #f3f4f6; color: #111827; }
+    </style>
+  </head>
+
+  <body class="h-full bg-gray-100 dark:bg-gray-900 transition-colors">
+
+    <!-- Dark mode toggle -->
+    <div class="absolute top-5 right-5 z-10">
+      <button onclick="toggleDark()"
+        class="px-4 py-2 text-sm rounded-lg bg-gray-200 dark:bg-gray-700 dark:text-white hover:opacity-80 transition">
+        🌙 Mode
+      </button>
+    </div>
+
+    <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+
+      <!-- Logo + Title -->
+      <div class="sm:mx-auto sm:w-full sm:max-w-sm text-center">
+        <div class="flex justify-center mb-4">
+          <a href="index.html"
+            class="bg-green-500 hover:bg-green-600 text-white w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold transition">
+            F
+          </a>
+        </div>
+        <h2 id="loginTitle" class="text-2xl font-bold text-gray-900 dark:text-white">
+          Login UMKM
+        </h2>
+        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+          Belum punya akun?
+          <a id="registerLink" href="register.html?role=umkm"
+            class="font-semibold text-green-600 hover:text-green-500">
+            Daftar gratis
+          </a>
+        </p>
+      </div>
+
+      <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-sm">
+
+        <!-- ROLE TOGGLE -->
+        <div class="flex gap-1.5 p-1.5 bg-gray-200 dark:bg-gray-700 rounded-xl mb-8">
+          <button id="tabUMKM" onclick="switchRole('umkm')"
+            class="role-tab active flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold">
+            🏪 UMKM
+          </button>
+          <button id="tabInvestor" onclick="switchRole('investor')"
+            class="role-tab flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold">
+            📈 Investor
+          </button>
+        </div>
+
+        <!-- FORM -->
+        <form class="space-y-5" onsubmit="handleLogin(event)">
+
+          <!-- Email -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              Email
+            </label>
+            <input type="email" required placeholder="nama@email.com"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2.5 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 transition" />
+          </div>
+
+          <!-- Password -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+              <a href="#" class="text-xs font-medium text-green-600 hover:text-green-500">Lupa password?</a>
+            </div>
+            <div class="relative">
+              <input id="pwInput" type="password" required placeholder="••••••••"
+                class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2.5 pr-10 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 transition" />
+              <button type="button" onclick="togglePw()"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-base select-none">
+                <span id="pwEye">👁</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Remember me -->
+          <div class="flex items-center gap-2">
+            <input id="remember" type="checkbox"
+              class="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer accent-green-600" />
+            <label for="remember" class="text-sm text-gray-600 dark:text-gray-400 cursor-pointer select-none">
+              Ingat saya
+            </label>
+          </div>
+
+          <!-- Error -->
+          <div id="errorMsg"
+            class="hidden items-center gap-2 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 text-red-600 dark:text-red-400 text-sm rounded-lg px-4 py-3">
+            ⚠️ <span id="errorText">Email atau password salah.</span>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" id="submitBtn"
+            class="w-full bg-green-600 hover:bg-green-700 active:scale-[.98] text-white font-semibold py-2.5 rounded-lg transition flex items-center justify-center gap-2">
+            <span id="btnText">Login UMKM</span>
+            <svg id="btnSpinner" class="hidden animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="white" stroke-width="4"/>
+              <path class="opacity-75" fill="white" d="M4 12a8 8 0 018-8v8H4z"/>
+            </svg>
+          </button>
+
+          <!-- Divider -->
+          <div class="flex items-center gap-3 text-xs text-gray-400">
+            <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
+            atau masuk dengan
+            <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
+          </div>
+
+          <!-- Google -->
+          <button type="button"
+            class="w-full flex items-center justify-center gap-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium py-2.5 rounded-lg transition text-sm">
+            <svg class="w-4 h-4" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Lanjutkan dengan Google
+          </button>
+
+        </form>
+      </div>
+    </div>
+
+    <script>
+      let currentRole = 'umkm';
+
+      // Auto-select role from URL
+      const params = new URLSearchParams(location.search);
+      if (params.get('role') === 'investor') switchRole('investor');
+
+      function switchRole(role) {
+        currentRole = role;
+        const isUMKM = role === 'umkm';
+        document.getElementById('tabUMKM').classList.toggle('active', isUMKM);
+        document.getElementById('tabInvestor').classList.toggle('active', !isUMKM);
+        document.getElementById('loginTitle').textContent = isUMKM ? 'Login UMKM' : 'Login Investor';
+        document.getElementById('registerLink').href = isUMKM ? 'register.html?role=umkm' : 'register.html?role=investor';
+        document.getElementById('btnText').textContent = isUMKM ? 'Login UMKM' : 'Login Investor';
+      }
+
+      function togglePw() {
+        const inp = document.getElementById('pwInput');
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+        document.getElementById('pwEye').textContent = inp.type === 'password' ? '👁' : '🙈';
+      }
+
+      function handleLogin(e) {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        const spinner = document.getElementById('btnSpinner');
+        const txt = document.getElementById('btnText');
+        document.getElementById('errorMsg').classList.add('hidden');
+        btn.disabled = true;
+        spinner.classList.remove('hidden');
+        txt.textContent = 'Memproses...';
+        setTimeout(() => {
+          spinner.classList.add('hidden');
+          btn.disabled = false;
+          txt.textContent = currentRole === 'umkm' ? 'Login UMKM' : 'Login Investor';
+          window.location.href = 'dashboard.html';
+        }, 1500);
+      }
+
+      function toggleDark() {
+        document.documentElement.classList.toggle('dark');
+      }
+    </script>
+  </body>
+</html>

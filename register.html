@@ -203,10 +203,41 @@
               />
               <button
                 type="button"
-                onclick="togglePw('pwInput', 'pwEye')"
-                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-base select-none"
+                onclick="togglePw('pwInput', 'eyeOpen1', 'eyeClosed1')"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
-                <span id="pwEye">👁</span>
+                <svg
+                  id="eyeOpen1"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                <svg
+                  id="eyeClosed1"
+                  class="hidden"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                >
+                  <path
+                    d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"
+                  />
+                  <path
+                    d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"
+                  />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
               </button>
             </div>
             <!-- Strength bar -->
@@ -248,13 +279,41 @@
               />
               <button
                 type="button"
-                onclick="togglePw('pwConfirm', 'pwEye2')"
-                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-base select-none"
+                onclick="togglePw('pwConfirm', 'eyeOpen2', 'eyeClosed2')"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
-                <!-- <span id="pwEye2">👁</span> -->
-                <span id="pwEye2" class="material-symbols-outlined">
-                  visibility
-                </span>
+                <svg
+                  id="eyeOpen2"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                <svg
+                  id="eyeClosed2"
+                  class="hidden"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                >
+                  <path
+                    d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"
+                  />
+                  <path
+                    d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"
+                  />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
               </button>
             </div>
             <p id="pwMatchMsg" class="text-xs mt-1 hidden"></p>
@@ -389,15 +448,16 @@
         document.getElementById("extraInput").required = d.extraRequired;
       }
 
-      function togglePw(inputId, eyeId) {
+      function togglePw(inputId, openId, closedId) {
         const inp = document.getElementById(inputId);
-        inp.type = inp.type === "password" ? "text" : "password";
-        document.getElementById(eyeId).textContent =
-          inp.type === "password" ? (
-            <span class="material-symbols-outlined">visibility</span>
-          ) : (
-            "🙈"
-          );
+        const openIcon = document.getElementById(openId);
+        const closedIcon = document.getElementById(closedId);
+
+        const isHidden = inp.type === "password";
+        inp.type = isHidden ? "text" : "password";
+
+        openIcon.classList.toggle("hidden", isHidden);
+        closedIcon.classList.toggle("hidden", !isHidden);
       }
 
       function checkPw(val) {

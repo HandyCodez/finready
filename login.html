@@ -18,7 +18,8 @@
 
       /* Eye button smooth swap */
       .eye-btn { transition: color .15s; }
-      .eye-btn svg { display: block; }
+      /* PERBAIKAN DI SINI: tambahkan :not(.hidden) agar tidak bentrok dengan Tailwind */
+      .eye-btn svg:not(.hidden) { display: block; }
     </style>
   </head>
 

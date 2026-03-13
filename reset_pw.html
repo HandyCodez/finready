@@ -1,0 +1,242 @@
+<!doctype html>
+<html class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reset Password — FinReady</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: "class" };
+    </script>
+    <style>
+      /* Step progress styling */
+      .step-circle { transition: all 0.3s; }
+      .step-circle.active { background: #16a34a; color: white; border-color: #16a34a; }
+      .step-circle.done { background: #16a34a; color: white; border-color: #16a34a; }
+      .step-line.done { background: #16a34a; }
+      
+      /* Input OTP focus */
+      .otp-input:focus { border-color: #16a34a; ring: 2px; ring-color: #16a34a; }
+    </style>
+  </head>
+
+  <body class="h-full bg-gray-100 dark:bg-gray-900 transition-colors">
+    <div class="absolute top-5 left-5 z-10">
+      <button onclick="handleBack()"
+        class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-green-400 hover:text-green-600 transition">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+        Kembali
+      </button>
+    </div>
+
+    <div class="absolute top-5 right-5 z-10">
+      <button onclick="toggleDark()"
+        class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-gray-400 transition">
+        <svg id="iconDark" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <svg id="iconLight" class="hidden" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><path d="M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        Mode
+      </button>
+    </div>
+
+    <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+      <div class="sm:mx-auto sm:w-full sm:max-w-sm text-center">
+        <div class="flex justify-center mb-5">
+          <div class="bg-green-500 text-white w-12 h-12 rounded-xl flex items-center justify-center font-bold shadow-md shadow-green-200 dark:shadow-none">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+              <path d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between mb-8 px-4" id="stepsIndicator">
+            <div class="flex flex-col items-center gap-1">
+                <div id="s1" class="step-circle active w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-400">1</div>
+                <span id="sl1" class="text-[10px] font-medium text-green-600">Email</span>
+            </div>
+            <div id="line1" class="step-line flex-1 h-[2px] bg-gray-200 dark:bg-gray-700 mx-2 -mt-4"></div>
+            <div class="flex flex-col items-center gap-1">
+                <div id="s2" class="step-circle w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-400">2</div>
+                <span id="sl2" class="text-[10px] font-medium text-gray-400">OTP</span>
+            </div>
+            <div id="line2" class="step-line flex-1 h-[2px] bg-gray-200 dark:bg-gray-700 mx-2 -mt-4"></div>
+            <div class="flex flex-col items-center gap-1">
+                <div id="s3" class="step-circle w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-400">3</div>
+                <span id="sl3" class="text-[10px] font-medium text-gray-400">Password</span>
+            </div>
+        </div>
+      </div>
+
+      <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+        <div id="step1" class="space-y-6">
+            <div class="text-center">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Lupa Password?</h2>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Masukkan email kamu untuk menerima kode OTP.</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email Akun</label>
+                    <input type="email" id="emailInput" placeholder="nama@email.com" 
+                        class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 outline-none transition text-sm" />
+                </div>
+                <button onclick="handleSendOTP()" id="sendBtn"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 rounded-lg transition-all flex items-center justify-center gap-2 text-sm shadow-sm shadow-green-300 dark:shadow-none">
+                    <span id="sendBtnText">Kirim Kode Verifikasi</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="step2" class="hidden space-y-6">
+            <div class="text-center">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Verifikasi OTP</h2>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Kode dikirim ke <span id="emailDisplay" class="font-semibold text-gray-900 dark:text-white"></span></p>
+            </div>
+            <div class="space-y-6">
+                <div class="flex justify-center gap-2" id="otpGroup">
+                    <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center text-lg font-bold rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-green-500 outline-none" />
+                    <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center text-lg font-bold rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-green-500 outline-none" />
+                    <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center text-lg font-bold rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-green-500 outline-none" />
+                    <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center text-lg font-bold rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-green-500 outline-none" />
+                    <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center text-lg font-bold rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-green-500 outline-none" />
+                    <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center text-lg font-bold rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-green-500 outline-none" />
+                </div>
+                <button onclick="handleVerifyOTP()" id="verifyBtn"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 rounded-lg transition-all text-sm shadow-sm shadow-green-300 dark:shadow-none">
+                    Verifikasi Kode
+                </button>
+                <div class="text-center text-xs text-gray-500">
+                    Tidak menerima kode? <button onclick="handleSendOTP()" class="text-green-600 font-bold hover:underline">Kirim ulang</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="step3" class="hidden space-y-6">
+            <div class="text-center">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Password Baru</h2>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Buat password yang kuat dan mudah diingat.</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Password Baru</label>
+                    <input type="password" id="newPw" placeholder="••••••••" 
+                        class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 outline-none transition text-sm" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Konfirmasi Password</label>
+                    <input type="password" id="confirmPw" placeholder="••••••••" 
+                        class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 outline-none transition text-sm" />
+                </div>
+                <button onclick="handleResetPassword()" id="resetBtn"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 rounded-lg transition-all text-sm shadow-sm shadow-green-300 dark:shadow-none">
+                    Simpan Password
+                </button>
+            </div>
+        </div>
+
+        <div id="successScreen" class="hidden text-center space-y-6">
+            <div class="flex justify-center">
+                <div class="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center text-green-600">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </div>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Berhasil!</h2>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Password kamu telah diperbarui. Silakan login kembali.</p>
+            </div>
+            <a href="login.html" class="block w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 rounded-lg transition-all text-sm shadow-sm shadow-green-300 dark:shadow-none">
+                Kembali ke Login
+            </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentStep = 1;
+      const DEMO_OTP = '123456';
+
+      // OTP Auto-focus logic
+      const otpInputs = document.querySelectorAll('.otp-input');
+      otpInputs.forEach((input, i) => {
+        input.addEventListener('input', (e) => {
+          if (e.target.value && i < otpInputs.length - 1) otpInputs[i+1].focus();
+        });
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !e.target.value && i > 0) otpInputs[i-1].focus();
+        });
+      });
+
+      function setStep(n) {
+        currentStep = n;
+        ['step1', 'step2', 'step3', 'successScreen'].forEach((id, idx) => {
+          document.getElementById(id).classList.toggle('hidden', idx + 1 !== n);
+        });
+        
+        if (n === 4) {
+            document.getElementById('stepsIndicator').classList.add('hidden');
+            return;
+        }
+
+        // Update progress circles
+        for (let i = 1; i <= 3; i++) {
+          const circle = document.getElementById('s' + i);
+          const label = document.getElementById('sl' + i);
+          circle.className = `step-circle w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-all ${i <= n ? 'active bg-green-600 border-green-600 text-white' : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-400'}`;
+          label.className = `text-[10px] font-medium ${i <= n ? 'text-green-600' : 'text-gray-400'}`;
+          if (i < n) circle.innerHTML = '✓';
+        }
+        document.getElementById('line1').classList.toggle('done', n > 1);
+        document.getElementById('line1').classList.toggle('bg-green-600', n > 1);
+        document.getElementById('line2').classList.toggle('done', n > 2);
+        document.getElementById('line2').classList.toggle('bg-green-600', n > 2);
+      }
+
+      function handleBack() {
+        if (currentStep > 1 && currentStep < 4) setStep(currentStep - 1);
+        else window.location.href = 'login.html';
+      }
+
+      function handleSendOTP() {
+        const email = document.getElementById('emailInput').value;
+        if(!email) return alert("Masukkan email!");
+        
+        const btn = document.getElementById('sendBtn');
+        btn.disabled = true;
+        btn.innerText = "Mengirim...";
+        
+        setTimeout(() => {
+          document.getElementById('emailDisplay').innerText = email;
+          setStep(2);
+          btn.disabled = false;
+          btn.innerText = "Kirim Kode Verifikasi";
+        }, 1000);
+      }
+
+      function handleVerifyOTP() {
+        const otp = Array.from(otpInputs).map(i => i.value).join('');
+        if(otp !== DEMO_OTP) return alert("OTP Salah! Gunakan 123456");
+        setStep(3);
+      }
+
+      function handleResetPassword() {
+        const p1 = document.getElementById('newPw').value;
+        const p2 = document.getElementById('confirmPw').value;
+        if(p1.length < 8) return alert("Password minimal 8 karakter");
+        if(p1 !== p2) return alert("Password tidak cocok");
+        setStep(4);
+      }
+
+      function toggleDark() {
+        const isDark = document.documentElement.classList.toggle('dark');
+        document.getElementById('iconDark').classList.toggle('hidden', isDark);
+        document.getElementById('iconLight').classList.toggle('hidden', !isDark);
+      }
+    </script>
+  </body>
+</html>

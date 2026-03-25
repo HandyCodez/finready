@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laporan Laba Rugi — FinReady Learn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f7f6f3;
+      --card: #ffffff;
+      --border: #e8e4dc;
+      --text: #1a1814;
+      --muted: #7a756b;
+      --primary: #16a34a;
+      --primary-light: #dcfce7;
+      --radius: 16px;
+      --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.05);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 15px;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d4cfc7; border-radius: 99px; }
+
+    /* ══════════════ HEADER ══════════════ */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      height: 56px;
+      display: flex; align-items: center;
+    }
+    .topbar-inner {
+      width: 100%; max-width: 1400px; margin: 0 auto;
+      padding: 0 20px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 500; color: var(--muted);
+      text-decoration: none;
+      padding: 6px 10px; border-radius: 8px;
+      transition: all .15s;
+    }
+    .back-btn:hover { background: var(--bg); color: var(--text); }
+
+    .topbar-title {
+      font-size: 14px; font-weight: 600; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 280px;
+    }
+    .topbar-sub { font-size: 11px; color: var(--muted); }
+
+    /* Progress pill in topbar */
+    .progress-pill {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--primary-light);
+      border: 1px solid #bbf7d0;
+      border-radius: 99px;
+      padding: 5px 12px 5px 8px;
+      white-space: nowrap;
+    }
+    .progress-pill .ring {
+      width: 26px; height: 26px; position: relative;
+    }
+    .progress-pill .ring svg { transform: rotate(-90deg); }
+    .progress-pill .ring-text {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 8px; font-weight: 700; color: var(--primary);
+    }
+    .progress-pill span { font-size: 12px; font-weight: 600; color: var(--primary); }
+
+    /* ══════════════ LAYOUT ══════════════ */
+    .layout {
+      display: flex;
+      height: calc(100vh - 56px);
+      overflow: hidden;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* ── LEFT PANEL: Table of Contents ── */
+    .toc-panel {
+      width: 256px; flex-shrink: 0;
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+
+    .toc-header {
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .toc-header h3 {
+      font-size: 11px; font-weight: 700; letter-spacing: .07em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 10px;
+    }
+
+    /* Module progress in TOC */
+    .module-progress {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--bg); border-radius: 10px; padding: 8px 10px;
+    }
+    .module-progress-bar {
+      flex: 1; height: 5px; background: var(--border); border-radius: 99px; overflow: hidden;
+    }
+    .module-progress-fill {
+      height: 100%; background: var(--primary); border-radius: 99px;
+      transition: width .4s ease;
+    }
+    .module-progress-text { font-size: 11px; font-weight: 600; color: var(--primary); white-space: nowrap; }
+
+    .toc-list { flex: 1; overflow-y: auto; padding: 10px 10px; }
+
+    .toc-section-label {
+      font-size: 10px; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--muted);
+      padding: 12px 8px 6px;
+    }
+
+    .toc-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 10px; border-radius: 10px;
+      cursor: pointer; transition: all .15s;
+      margin-bottom: 2px; position: relative;
+    }
+    .toc-item:hover { background: var(--bg); }
+    .toc-item.active { background: var(--primary-light); }
+    .toc-item.active::before {
+      content: ''; position: absolute; left: 0; top: 8px; bottom: 8px;
+      width: 3px; background: var(--primary); border-radius: 0 2px 2px 0;
+    }
+
+    .toc-status {
+      width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid var(--border); background: var(--card);
+      transition: all .2s;
+    }
+    .toc-item.done .toc-status { background: var(--primary); border-color: var(--primary); }
+    .toc-item.active .toc-status { border-color: var(--primary); background: var(--primary-light); }
+    .toc-item.locked .toc-status { background: var(--bg); }
+
+    .toc-text { flex: 1; min-width: 0; }
+    .toc-name { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.35; }
+    .toc-item.active .toc-name { font-weight: 600; color: var(--primary); }
+    .toc-item.done .toc-name { color: var(--muted); }
+    .toc-item.locked .toc-name { color: #c5bfb5; }
+    .toc-meta { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .toc-item.locked .toc-meta { color: #d4cfc7; }
+
+    /* Next quiz CTA at bottom of TOC */
+    .toc-footer {
+      padding: 12px; border-top: 1px solid var(--border); flex-shrink: 0;
+    }
+    .quiz-cta {
+      display: flex; align-items: center; gap: 10px;
+      background: #fefce8; border: 1px solid #fde68a;
+      border-radius: 12px; padding: 10px 12px; cursor: pointer;
+      transition: all .15s;
+    }
+    .quiz-cta:hover { background: #fef9c3; border-color: #fcd34d; }
+    .quiz-cta-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: #fef08a; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .quiz-cta-text { font-size: 12px; font-weight: 600; color: #713f12; }
+    .quiz-cta-sub  { font-size: 11px; color: #92400e; margin-top: 1px; }
+
+    /* ── CENTER: PDF Viewer ── */
+    .viewer {
+      flex: 1; min-width: 0;
+      display: flex; flex-direction: column;
+      background: #ddd9d0;
+      position: relative;
+    }
+
+    /* PDF control bar */
+    .pdf-controls {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 16px;
+      display: flex; align-items: center; gap: 10px;
+      flex-shrink: 0; flex-wrap: wrap;
+    }
+
+    .ctrl-group { display: flex; align-items: center; gap: 6px; }
+    .ctrl-sep { width: 1px; height: 20px; background: var(--border); flex-shrink: 0; }
+
+    .ctrl-btn {
+      width: 30px; height: 30px; border-radius: 7px;
+      border: 1.5px solid var(--border); background: var(--card);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all .15s; color: var(--muted); flex-shrink: 0;
+    }
+    .ctrl-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+    .ctrl-btn:disabled { opacity: .3; cursor: not-allowed; }
+
+    .page-nav {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 12px; color: var(--muted);
+    }
+    .page-nav input {
+      width: 40px; text-align: center;
+      border: 1.5px solid var(--border); border-radius: 7px;
+      padding: 4px 4px; font-size: 13px; font-family: 'DM Mono', monospace;
+      background: var(--card); color: var(--text);
+    }
+    .page-nav input:focus { outline: none; border-color: var(--primary); }
+
+    .zoom-select {
+      border: 1.5px solid var(--border); border-radius: 7px;
+      padding: 4px 6px; font-size: 12px;
+      background: var(--card); color: var(--text); cursor: pointer;
+    }
+    .zoom-select:focus { outline: none; border-color: var(--primary); }
+
+    /* Reading time estimate */
+    .reading-est {
+      margin-left: auto;
+      display: flex; align-items: center; gap: 5px;
+      font-size: 11.5px; color: var(--muted);
+      background: var(--bg); border-radius: 8px;
+      padding: 4px 10px; flex-shrink: 0;
+    }
+
+    /* Canvas scroll */
+    .canvas-wrap {
+      flex: 1; overflow-y: auto; overflow-x: auto;
+      display: flex; flex-direction: column;
+      align-items: center; padding: 24px 20px; gap: 16px;
+    }
+
+    .pdf-page-block {
+      position: relative; flex-shrink: 0;
+    }
+    .pdf-page-block canvas {
+      display: block;
+      box-shadow: 0 4px 24px rgba(0,0,0,.2), 0 1px 4px rgba(0,0,0,.1);
+      border-radius: 3px;
+    }
+    .pdf-page-num {
+      text-align: center; font-size: 11px; color: #9e998f;
+      font-family: 'DM Mono', monospace; margin-top: 8px;
+    }
+
+    /* Loading skeleton */
+    .page-skeleton {
+      width: 595px; background: #fff;
+      box-shadow: 0 4px 24px rgba(0,0,0,.2);
+      border-radius: 3px; overflow: hidden;
+      background: linear-gradient(90deg, #e8e4dc 25%, #f0ece6 50%, #e8e4dc 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    /* Empty state */
+    .viewer-empty {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px; text-align: center; padding: 40px;
+    }
+
+    /* Progress bar load */
+    .load-progress {
+      position: absolute; top: 0; left: 0; right: 0; height: 3px; z-index: 10;
+      overflow: hidden; pointer-events: none;
+    }
+    .load-progress-fill {
+      height: 100%; background: var(--primary);
+      border-radius: 0 2px 2px 0;
+      transition: width .3s ease; width: 0;
+    }
+
+    /* Floating page badge */
+    .page-badge {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(26,24,20,.75); backdrop-filter: blur(8px);
+      color: #fff; font-size: 12px; font-family: 'DM Mono', monospace;
+      padding: 5px 14px; border-radius: 99px;
+      opacity: 0; pointer-events: none;
+      transition: opacity .25s; z-index: 50;
+    }
+    .page-badge.show { opacity: 1; }
+
+    /* ── RIGHT PANEL: Notes + Info ── */
+    .right-panel {
+      width: 272px; flex-shrink: 0;
+      background: var(--card);
+      border-left: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+
+    .right-tabs {
+      display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .right-tab {
+      flex: 1; padding: 10px 0; font-size: 12px; font-weight: 600;
+      color: var(--muted); cursor: pointer; text-align: center;
+      border-bottom: 2px solid transparent; transition: all .15s;
+    }
+    .right-tab.active { color: var(--primary); border-color: var(--primary); }
+
+    .right-body { flex: 1; overflow-y: auto; padding: 14px; }
+
+    /* Info tab */
+    .info-section { margin-bottom: 20px; }
+    .info-label {
+      font-size: 10px; font-weight: 700; letter-spacing: .07em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 8px;
+    }
+    .info-card {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px 14px;
+    }
+    .info-card p { font-size: 13px; color: var(--text); line-height: 1.6; }
+
+    .stat-row { display: flex; gap: 8px; }
+    .stat-box {
+      flex: 1; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 12px; text-align: center;
+    }
+    .stat-box-val { font-size: 18px; font-weight: 700; color: var(--text); }
+    .stat-box-lbl { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+
+    .topic-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--primary-light); color: var(--primary);
+      font-size: 11.5px; font-weight: 600;
+      border-radius: 6px; padding: 3px 8px; margin: 2px;
+    }
+
+    /* Notes tab */
+    .note-textarea {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 10px 12px; font-size: 13px; font-family: 'DM Sans', sans-serif;
+      color: var(--text); resize: none; height: 110px;
+      background: var(--bg); line-height: 1.6; transition: border-color .15s;
+    }
+    .note-textarea:focus { outline: none; border-color: var(--primary); background: #fff; }
+    .note-page-label {
+      font-size: 11px; color: var(--muted); margin-bottom: 6px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .note-save-btn {
+      width: 100%; margin-top: 8px; padding: 8px 12px;
+      background: var(--primary); color: #fff; border-radius: 8px;
+      font-size: 13px; font-weight: 600; cursor: pointer; border: none;
+      transition: background .15s; font-family: inherit;
+    }
+    .note-save-btn:hover { background: #15803d; }
+
+    .saved-note {
+      background: #fefce8; border: 1px solid #fde68a;
+      border-radius: 10px; padding: 10px 12px; margin-bottom: 8px;
+      font-size: 12.5px; color: #713f12; line-height: 1.6; position: relative;
+    }
+    .saved-note-page { font-size: 10px; font-weight: 700; color: #92400e; margin-bottom: 3px; }
+    .saved-note-del {
+      position: absolute; top: 8px; right: 10px;
+      background: none; border: none; cursor: pointer;
+      color: #d97706; font-size: 16px; line-height: 1;
+    }
+    .saved-note-del:hover { color: #92400e; }
+
+    /* ── Responsive ── */
+    @media (max-width: 1100px) { .right-panel { display: none; } }
+    @media (max-width: 700px)  { .toc-panel   { display: none; } }
+
+    /* Complete button */
+    .complete-strip {
+      background: var(--card); border-top: 1px solid var(--border);
+      padding: 12px 20px; display: flex; align-items: center;
+      justify-content: space-between; gap: 12px; flex-shrink: 0;
+    }
+    .complete-strip .info { font-size: 13px; color: var(--muted); }
+    .complete-strip strong { color: var(--text); }
+    .btn-complete {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--primary); color: #fff;
+      border: none; border-radius: 10px; padding: 10px 20px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      font-family: inherit; transition: all .15s; white-space: nowrap;
+    }
+    .btn-complete:hover { background: #15803d; transform: translateY(-1px); }
+    .btn-complete.done {
+      background: var(--bg); color: var(--primary);
+      border: 1.5px solid #bbf7d0;
+    }
+    .btn-complete.done:hover { background: var(--primary-light); transform: none; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 28px; right: 28px; z-index: 999;
+      background: var(--text); color: #fff;
+      border-radius: 12px; padding: 12px 18px;
+      font-size: 13px; font-weight: 500;
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.2);
+      transform: translateY(16px); opacity: 0;
+      transition: all .25s; pointer-events: none;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.green { background: var(--primary); }
+  </style>
+</head>
+<body>
+
+<!-- ════════ TOP BAR ════════ -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="pembelajaran.html" class="back-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg>
+      Kembali
+    </a>
+
+    <div class="text-center" style="flex:1;min-width:0">
+      <div class="topbar-title" id="headerTitle">Memuat materi...</div>
+      <div class="topbar-sub">Modul 2 · Laporan Keuangan</div>
+    </div>
+
+    <!-- Progress pill -->
+    <div class="progress-pill">
+      <div class="ring">
+        <svg width="26" height="26" viewBox="0 0 36 36">
+          <circle cx="18" cy="18" r="15" fill="none" stroke="#bbf7d0" stroke-width="3.5"/>
+          <circle cx="18" cy="18" r="15" fill="none" stroke="#16a34a" stroke-width="3.5"
+            stroke-dasharray="94.2" stroke-dashoffset="28" stroke-linecap="round"/>
+        </svg>
+        <div class="ring-text">70%</div>
+      </div>
+      <span>3 dari 5 selesai</span>
+    </div>
+  </div>
+</header>
+
+<!-- ════════ LAYOUT ════════ -->
+<div class="layout">
+
+  <!-- ── TOC Panel ── -->
+  <nav class="toc-panel">
+    <div class="toc-header">
+      <h3>Modul 2 — Laporan Keuangan</h3>
+      <div class="module-progress">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <div class="module-progress-bar"><div class="module-progress-fill" style="width:60%"></div></div>
+        <span class="module-progress-text">60%</span>
+      </div>
+    </div>
+
+    <div class="toc-list">
+      <!-- Section 1 -->
+      <div class="toc-section-label">Materi Bacaan</div>
+
+      <div class="toc-item done" onclick="switchMaterial(0)">
+        <div class="toc-status">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <div class="toc-text">
+          <div class="toc-name">Pengantar Laporan Keuangan</div>
+          <div class="toc-meta">12 hal · Selesai</div>
+        </div>
+      </div>
+
+      <div class="toc-item done" onclick="switchMaterial(1)">
+        <div class="toc-status">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <div class="toc-text">
+          <div class="toc-name">Neraca (Balance Sheet)</div>
+          <div class="toc-meta">18 hal · Selesai</div>
+        </div>
+      </div>
+
+      <div class="toc-item active" id="toc-2" onclick="switchMaterial(2)">
+        <div class="toc-status">
+          <svg width="8" height="8" viewBox="0 0 24 24" fill="#16a34a"><circle cx="12" cy="12" r="8"/></svg>
+        </div>
+        <div class="toc-text">
+          <div class="toc-name">Laporan Laba Rugi</div>
+          <div class="toc-meta">15 hal · Sedang dibaca</div>
+        </div>
+      </div>
+
+      <div class="toc-item" onclick="switchMaterial(3)">
+        <div class="toc-status"></div>
+        <div class="toc-text">
+          <div class="toc-name">Laporan Arus Kas</div>
+          <div class="toc-meta">20 hal · Belum dibaca</div>
+        </div>
+      </div>
+
+      <div class="toc-item locked">
+        <div class="toc-status">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#c5bfb5" stroke-width="2.5" stroke-linecap="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="toc-text">
+          <div class="toc-name">Analisis Rasio Keuangan</div>
+          <div class="toc-meta">Selesaikan materi sebelumnya</div>
+        </div>
+      </div>
+
+      <!-- Section 2 -->
+      <div class="toc-section-label">Latihan & Quiz</div>
+
+      <div class="toc-item locked">
+        <div class="toc-status">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#c5bfb5" stroke-width="2.5" stroke-linecap="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="toc-text">
+          <div class="toc-name">Latihan Soal Modul 2</div>
+          <div class="toc-meta">10 soal · Terkunci</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz CTA at bottom -->
+    <div class="toc-footer">
+      <a href="lesson.html" class="quiz-cta" style="text-decoration:none">
+        <div class="quiz-cta-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div>
+          <div class="quiz-cta-text">Kerjakan Quiz</div>
+          <div class="quiz-cta-sub">Tersedia setelah selesai baca</div>
+        </div>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ── PDF Viewer ── -->
+  <main class="viewer">
+    <div class="load-progress"><div class="load-progress-fill" id="loadFill"></div></div>
+
+    <!-- PDF Controls -->
+    <div class="pdf-controls" id="pdfControls">
+      <!-- Page nav -->
+      <div class="ctrl-group page-nav">
+        <button class="ctrl-btn" id="btnPrev" onclick="changePage(-1)" disabled>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <input id="pageInput" type="number" value="1" min="1">
+        <span style="color:var(--muted);font-size:12px">/ <span id="totalPagesLabel">—</span></span>
+        <button class="ctrl-btn" id="btnNext" onclick="changePage(1)" disabled>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+
+      <div class="ctrl-sep"></div>
+
+      <!-- Zoom -->
+      <div class="ctrl-group">
+        <button class="ctrl-btn" onclick="zoom(-0.2)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+        </button>
+        <select class="zoom-select" id="zoomSelect" onchange="setZoom(this.value)">
+          <option value="0.6">60%</option>
+          <option value="0.8">80%</option>
+          <option value="1" selected>100%</option>
+          <option value="1.25">125%</option>
+          <option value="1.5">150%</option>
+          <option value="2">200%</option>
+          <option value="fit">Fit Lebar</option>
+        </select>
+        <button class="ctrl-btn" onclick="zoom(0.2)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+        </button>
+      </div>
+
+      <div class="ctrl-sep"></div>
+
+      <!-- Fullscreen -->
+      <button class="ctrl-btn" onclick="toggleFS()" title="Layar penuh">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+      </button>
+
+      <!-- Reading estimate -->
+      <div class="reading-est" id="readingEst">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span id="readingText">Menghitung...</span>
+      </div>
+    </div>
+
+    <!-- Canvas area -->
+    <div class="canvas-wrap" id="canvasWrap">
+      <!-- Loading state -->
+      <div id="loadingState" style="display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:40px">
+        <div class="page-skeleton" style="height:780px;border-radius:3px"></div>
+        <div style="font-size:12px;color:#9e998f;font-family:'DM Mono',monospace">Memuat materi PDF...</div>
+      </div>
+    </div>
+
+    <!-- Complete strip -->
+    <div class="complete-strip" id="completeStrip" style="display:none">
+      <div class="info">
+        <strong id="stripMaterialName">Laporan Laba Rugi</strong>
+        <span> · Halaman <span id="stripPage">1</span> dari <span id="stripTotal">15</span></span>
+      </div>
+      <button class="btn-complete" id="btnComplete" onclick="markComplete()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>
+        Tandai Selesai & Lanjut
+      </button>
+    </div>
+  </main>
+
+  <!-- ── Right Panel ── -->
+  <aside class="right-panel">
+    <div class="right-tabs">
+      <div class="right-tab active" onclick="switchTab('info')" id="rtab-info">Info</div>
+      <div class="right-tab" onclick="switchTab('notes')" id="rtab-notes">Catatan</div>
+      <div class="right-tab" onclick="switchTab('thumb')" id="rtab-thumb">Halaman</div>
+    </div>
+
+    <!-- INFO TAB -->
+    <div class="right-body" id="rbody-info">
+      <div class="info-section">
+        <div class="info-label">Tentang Materi</div>
+        <div class="info-card">
+          <p id="infoDesc">Materi ini menjelaskan cara membaca dan menganalisis Laporan Laba Rugi (Income Statement) — komponen penting dalam laporan keuangan bisnis.</p>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-label">Statistik</div>
+        <div class="stat-row">
+          <div class="stat-box">
+            <div class="stat-box-val" id="statPages">—</div>
+            <div class="stat-box-lbl">Halaman</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-box-val" id="statTime">—</div>
+            <div class="stat-box-lbl">Mnt baca</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-label">Topik</div>
+        <div>
+          <span class="topic-tag">Pendapatan</span>
+          <span class="topic-tag">Beban</span>
+          <span class="topic-tag">Laba Bersih</span>
+          <span class="topic-tag">HPP</span>
+          <span class="topic-tag">EBIT</span>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-label">Kemajuan Baca</div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px 14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <span style="font-size:12px;color:var(--muted)">Halaman terbaca</span>
+            <span style="font-size:12px;font-weight:700;color:var(--primary)" id="readPct">0%</span>
+          </div>
+          <div style="height:6px;background:var(--border);border-radius:99px;overflow:hidden">
+            <div style="height:100%;background:var(--primary);border-radius:99px;transition:width .4s" id="readBar"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTES TAB -->
+    <div class="right-body hidden" id="rbody-notes">
+      <div class="note-page-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/></svg>
+        Catatan – Hal. <span id="notePageNum">1</span>
+      </div>
+      <textarea id="noteTA" class="note-textarea" placeholder="Tulis catatan untuk halaman ini..."></textarea>
+      <button class="note-save-btn" onclick="saveNote()">Simpan Catatan</button>
+
+      <div style="margin-top:16px">
+        <div class="info-label" style="margin-bottom:8px">Catatan Tersimpan</div>
+        <div id="notesList"><p style="font-size:12px;color:var(--muted)">Belum ada catatan.</p></div>
+      </div>
+    </div>
+
+    <!-- THUMBNAILS TAB -->
+    <div class="right-body hidden" id="rbody-thumb">
+      <div id="thumbGrid" style="display:flex;flex-direction:column;gap:6px">
+        <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:16px">Memuat thumbnail...</p>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- Floating page badge -->
+<div class="page-badge" id="pageBadge"></div>
+
+<!-- Toast -->
+<div class="toast green" id="toast">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>
+  <span id="toastMsg">Berhasil!</span>
+</div>
+
+<script>
+// ─────────────────────────────────────────
+//  PDF.js config
+// ─────────────────────────────────────────
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// ─────────────────────────────────────────
+//  Materials registry — admin defines these
+// ─────────────────────────────────────────
+const MATERIALS = [
+  {
+    id: 0,
+    title: 'Pengantar Laporan Keuangan',
+    desc: 'Memahami dasar-dasar laporan keuangan dan fungsinya dalam pengambilan keputusan bisnis.',
+    topics: ['Definisi','Jenis Laporan','Fungsi'],
+    url: null, // set by admin
+    fallback: true,
+  },
+  {
+    id: 1,
+    title: 'Neraca (Balance Sheet)',
+    desc: 'Penjelasan lengkap tentang aset, liabilitas, dan ekuitas dalam neraca keuangan perusahaan.',
+    topics: ['Aset','Liabilitas','Ekuitas'],
+    url: null,
+    fallback: true,
+  },
+  {
+    id: 2,
+    title: 'Laporan Laba Rugi',
+    desc: 'Materi ini menjelaskan cara membaca dan menganalisis Laporan Laba Rugi — komponen penting dalam laporan keuangan bisnis.',
+    topics: ['Pendapatan','Beban','Laba Bersih','HPP','EBIT'],
+    // Demo PDF — replace with your own URL e.g. '/materi/laba-rugi.pdf'
+    url: 'https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf',
+    fallback: false,
+  },
+  {
+    id: 3,
+    title: 'Laporan Arus Kas',
+    desc: 'Memahami aliran kas masuk dan keluar dari aktivitas operasi, investasi, dan pendanaan.',
+    topics: ['Arus Kas','Operasi','Investasi','Pendanaan'],
+    url: null,
+    fallback: true,
+  },
+];
+
+// ─────────────────────────────────────────
+//  State
+// ─────────────────────────────────────────
+let pdfDoc      = null;
+let curPage     = 1;
+let totalPages  = 0;
+let curScale    = 1.0;
+let notes       = {};   // { 'matId_page': text }
+let activeMat   = 2;    // currently active material index
+let badgeTimer  = null;
+let completed   = new Set([0, 1]);
+
+// ─────────────────────────────────────────
+//  Init — load current material
+// ─────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  loadMaterial(activeMat);
+  document.getElementById('pageInput').addEventListener('change', e => goToPage(+e.target.value));
+});
+
+// ─────────────────────────────────────────
+//  Switch material from TOC
+// ─────────────────────────────────────────
+function switchMaterial(idx) {
+  activeMat = idx;
+  const mat = MATERIALS[idx];
+
+  // Update TOC active states
+  document.querySelectorAll('.toc-item').forEach((el, i) => {
+    if (i === idx) el.classList.add('active');
+    else el.classList.remove('active');
+  });
+
+  // Update header
+  document.getElementById('headerTitle').textContent = mat.title;
+  document.getElementById('infoDesc').textContent    = mat.desc;
+  document.getElementById('stripMaterialName').textContent = mat.title;
+
+  // Update topics
+  const tags = (mat.topics || []).map(t => `<span class="topic-tag">${t}</span>`).join('');
+  document.querySelector('.info-section:nth-child(3) > div:last-child').innerHTML = tags;
+
+  loadMaterial(idx);
+}
+
+// ─────────────────────────────────────────
+//  Load PDF
+// ─────────────────────────────────────────
+function loadMaterial(idx) {
+  const mat = MATERIALS[idx];
+
+  // Show loading skeleton
+  const wrap = document.getElementById('canvasWrap');
+  wrap.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:40px">
+    <div class="page-skeleton" style="height:780px;border-radius:3px"></div>
+    <div style="font-size:12px;color:#9e998f;font-family:'DM Mono',monospace">Memuat materi...</div>
+  </div>`;
+  document.getElementById('completeStrip').style.display = 'none';
+
+  // If no PDF url, show placeholder
+  if (!mat.url) {
+    setTimeout(() => showNoContent(mat), 400);
+    return;
+  }
+
+  // Load progress bar
+  const fill = document.getElementById('loadFill');
+  fill.style.width = '20%';
+
+  pdfjsLib.getDocument(mat.url).promise.then(pdf => {
+    pdfDoc     = pdf;
+    totalPages = pdf.numPages;
+    curPage    = 1;
+    curScale   = 1.0;
+
+    // Update UI
+    document.getElementById('totalPagesLabel').textContent = totalPages;
+    document.getElementById('pageInput').max   = totalPages;
+    document.getElementById('pageInput').value = 1;
+    document.getElementById('btnPrev').disabled = true;
+    document.getElementById('btnNext').disabled = totalPages <= 1;
+    document.getElementById('headerTitle').textContent = mat.title;
+    document.getElementById('statPages').textContent = totalPages;
+    document.getElementById('statTime').textContent  = Math.ceil(totalPages * 1.5);
+    document.getElementById('readingText').textContent = `~${Math.ceil(totalPages*1.5)} mnt baca`;
+    document.getElementById('stripMaterialName').textContent = mat.title;
+    document.getElementById('stripTotal').textContent = totalPages;
+
+    fill.style.width = '60%';
+
+    return renderAllPages(pdf);
+  }).then(() => {
+    fill.style.width = '100%';
+    setTimeout(() => { fill.style.width = '0'; }, 500);
+    document.getElementById('completeStrip').style.display = 'flex';
+    updateReadProgress();
+    buildThumbs();
+    renderNotes();
+  }).catch(err => {
+    console.error(err);
+    fill.style.width = '0';
+    showNoContent(MATERIALS[idx]);
+    showToast('Gagal memuat PDF. Cek koneksi internet.', false);
+  });
+}
+
+// ─────────────────────────────────────────
+//  Render all pages
+// ─────────────────────────────────────────
+async function renderAllPages(pdf) {
+  const wrap = document.getElementById('canvasWrap');
+  wrap.innerHTML = '';
+
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const block   = document.createElement('div');
+    block.className = 'pdf-page-block';
+    block.id       = 'pg_' + i;
+    block.dataset.page = i;
+
+    const canvas  = document.createElement('canvas');
+    canvas.id     = 'cv_' + i;
+    block.appendChild(canvas);
+
+    const num   = document.createElement('div');
+    num.className = 'pdf-page-num';
+    num.textContent = i + ' / ' + pdf.numPages;
+    block.appendChild(num);
+
+    wrap.appendChild(block);
+  }
+
+  // Render visible pages eagerly, rest lazily
+  for (let i = 1; i <= pdf.numPages; i++) {
+    await renderOnePage(i, pdf);
+  }
+
+  setupObserver(wrap);
+}
+
+async function renderOnePage(pageNum, pdf) {
+  if (!pdf) return;
+  try {
+    const page = await pdf.getPage(pageNum);
+    const cv   = document.getElementById('cv_' + pageNum);
+    if (!cv) return;
+
+    let scale = curScale;
+    if (curScale === 'fit') {
+      const vp0  = page.getViewport({ scale: 1 });
+      const avail = document.getElementById('canvasWrap').clientWidth - 48;
+      scale = Math.min(avail / vp0.width, 1.5);
+    }
+
+    const vp = page.getViewport({ scale });
+    cv.width  = vp.width;
+    cv.height = vp.height;
+    await page.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
+  } catch(e) {}
+}
+
+// ─────────────────────────────────────────
+//  Scroll observer
+// ─────────────────────────────────────────
+function setupObserver(wrap) {
+  const obs = new IntersectionObserver(entries => {
+    let max = 0, pg = curPage;
+    entries.forEach(e => {
+      if (e.intersectionRatio > max) { max = e.intersectionRatio; pg = +e.target.dataset.page; }
+    });
+    if (pg !== curPage) {
+      curPage = pg;
+      document.getElementById('pageInput').value = pg;
+      document.getElementById('btnPrev').disabled = pg <= 1;
+      document.getElementById('btnNext').disabled = pg >= totalPages;
+      document.getElementById('stripPage').textContent = pg;
+      document.getElementById('notePageNum').textContent = pg;
+      document.getElementById('noteTA').value = notes[activeMat + '_' + pg] || '';
+
+      // Sync thumbnail
+      document.querySelectorAll('.thumb-item').forEach((el,i) => {
+        el.classList.toggle('t-active', i + 1 === pg);
+      });
+
+      updateReadProgress();
+      showBadge();
+    }
+  }, { root: wrap, threshold: Array.from({length:11},(_,i)=>i/10) });
+
+  document.querySelectorAll('.pdf-page-block').forEach(el => obs.observe(el));
+}
+
+// ─────────────────────────────────────────
+//  Navigation
+// ─────────────────────────────────────────
+function changePage(d) { goToPage(curPage + d); }
+
+function goToPage(n) {
+  const p = Math.max(1, Math.min(n, totalPages));
+  document.getElementById('pg_' + p)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ─────────────────────────────────────────
+//  Zoom
+// ─────────────────────────────────────────
+function zoom(delta) {
+  if (curScale === 'fit') curScale = 1.0;
+  curScale = +(Math.min(2.5, Math.max(0.4, curScale + delta)).toFixed(2));
+  applyZoom();
+}
+function setZoom(v) {
+  curScale = v === 'fit' ? 'fit' : +v;
+  applyZoom();
+}
+async function applyZoom() {
+  if (!pdfDoc) return;
+  for (let i = 1; i <= totalPages; i++) await renderOnePage(i, pdfDoc);
+}
+
+// ─────────────────────────────────────────
+//  Read progress
+// ─────────────────────────────────────────
+function updateReadProgress() {
+  const pct = totalPages ? Math.round((curPage / totalPages) * 100) : 0;
+  document.getElementById('readPct').textContent = pct + '%';
+  document.getElementById('readBar').style.width = pct + '%';
+}
+
+// ─────────────────────────────────────────
+//  Thumbnails
+// ─────────────────────────────────────────
+async function buildThumbs() {
+  if (!pdfDoc) return;
+  const grid = document.getElementById('thumbGrid');
+  grid.innerHTML = '';
+
+  const max = Math.min(pdfDoc.numPages, 60);
+  for (let i = 1; i <= max; i++) {
+    const item   = document.createElement('div');
+    item.className = 'thumb-item' + (i === 1 ? ' t-active' : '');
+    item.onclick  = () => goToPage(i);
+    item.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:8px;cursor:pointer;transition:all .15s;';
+    item.setAttribute('data-tpage', i);
+
+    const num  = document.createElement('span');
+    num.textContent = i;
+    num.style.cssText = 'font-size:10px;font-family:"DM Mono",monospace;color:var(--muted);min-width:20px;text-align:right';
+
+    const cv   = document.createElement('canvas');
+    cv.style.cssText = 'border:1.5px solid var(--border);border-radius:3px;display:block;max-width:160px';
+
+    item.appendChild(num);
+    item.appendChild(cv);
+    grid.appendChild(item);
+
+    // lazy render thumb
+    ;(async(pg, canvas) => {
+      try {
+        const page = await pdfDoc.getPage(pg);
+        const vp   = page.getViewport({ scale: 0.18 });
+        canvas.width  = vp.width;
+        canvas.height = vp.height;
+        await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+      } catch(e) {}
+    })(i, cv);
+  }
+
+  // Style for active
+  const style = document.createElement('style');
+  style.textContent = `.thumb-item:hover{background:var(--primary-light)}.t-active{background:var(--primary-light)!important}.t-active canvas{border-color:var(--primary)!important}`;
+  document.head.appendChild(style);
+}
+
+// ─────────────────────────────────────────
+//  Notes
+// ─────────────────────────────────────────
+function saveNote() {
+  const text = document.getElementById('noteTA').value.trim();
+  const key  = activeMat + '_' + curPage;
+  if (text) notes[key] = text;
+  else delete notes[key];
+  renderNotes();
+
+  const btn = document.querySelector('.note-save-btn');
+  btn.textContent = '✓ Tersimpan';
+  setTimeout(() => { btn.textContent = 'Simpan Catatan'; }, 1400);
+}
+
+function renderNotes() {
+  const list = document.getElementById('notesList');
+  const prefix = activeMat + '_';
+  const entries = Object.entries(notes).filter(([k]) => k.startsWith(prefix));
+  if (!entries.length) {
+    list.innerHTML = '<p style="font-size:12px;color:var(--muted)">Belum ada catatan.</p>';
+    return;
+  }
+  list.innerHTML = entries.map(([k, txt]) => {
+    const pg = k.replace(prefix,'');
+    return `<div class="saved-note">
+      <div class="saved-note-page">Halaman ${pg}</div>
+      ${esc(txt).replace(/\n/g,'<br>')}
+      <button class="saved-note-del" onclick="delNote('${k}')">×</button>
+    </div>`;
+  }).join('');
+}
+
+function delNote(key) { delete notes[key]; renderNotes(); }
+
+// ─────────────────────────────────────────
+//  Mark complete
+// ─────────────────────────────────────────
+function markComplete() {
+  completed.add(activeMat);
+  const btn = document.getElementById('btnComplete');
+  btn.className = 'btn-complete done';
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Selesai Dibaca`;
+
+  // Update TOC item
+  const tocItem = document.querySelector(`.toc-item.active`);
+  if (tocItem) {
+    tocItem.classList.remove('active');
+    tocItem.classList.add('done');
+    tocItem.querySelector('.toc-status').innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>`;
+    tocItem.querySelector('.toc-meta').textContent = tocItem.querySelector('.toc-meta').textContent.replace('Sedang dibaca','Selesai');
+  }
+
+  showToast('Materi selesai! Lanjut ke materi berikutnya.', true);
+}
+
+// ─────────────────────────────────────────
+//  Tab switching
+// ─────────────────────────────────────────
+function switchTab(name) {
+  ['info','notes','thumb'].forEach(t => {
+    document.getElementById('rtab-' + t).classList.toggle('active', t === name);
+    document.getElementById('rbody-' + t).classList.toggle('hidden', t !== name);
+  });
+}
+
+// ─────────────────────────────────────────
+//  No content fallback
+// ─────────────────────────────────────────
+function showNoContent(mat) {
+  const wrap = document.getElementById('canvasWrap');
+  wrap.innerHTML = `
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:60px 32px;text-align:center">
+      <div style="width:72px;height:72px;background:var(--primary-light);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:4px">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="1.5" stroke-linecap="round">
+          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+      </div>
+      <div>
+        <h3 style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px">${mat.title}</h3>
+        <p style="font-size:13.5px;color:var(--muted);max-width:340px;line-height:1.7;margin:0 auto">${mat.desc}</p>
+      </div>
+      <div style="background:var(--bg);border:1.5px dashed var(--border);border-radius:16px;padding:20px 28px;max-width:360px">
+        <p style="font-size:12.5px;color:var(--muted);line-height:1.7">
+          Materi PDF untuk topik ini sedang <strong style="color:var(--text)">disiapkan oleh instruktur</strong>.<br>
+          Silakan cek kembali dalam beberapa waktu.
+        </p>
+      </div>
+      <a href="pembelajaran.html" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--primary);text-decoration:none;background:var(--primary-light);border-radius:10px;padding:8px 16px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg>
+        Kembali ke Daftar Materi
+      </a>
+    </div>`;
+  document.getElementById('totalPagesLabel').textContent = '—';
+  document.getElementById('statPages').textContent = '—';
+  document.getElementById('statTime').textContent  = '—';
+  document.getElementById('readingText').textContent = '—';
+}
+
+// ─────────────────────────────────────────
+//  Floating page badge
+// ─────────────────────────────────────────
+function showBadge() {
+  const b = document.getElementById('pageBadge');
+  b.textContent = curPage + ' / ' + totalPages;
+  b.classList.add('show');
+  clearTimeout(badgeTimer);
+  badgeTimer = setTimeout(() => b.classList.remove('show'), 1800);
+}
+
+// ─────────────────────────────────────────
+//  Toast
+// ─────────────────────────────────────────
+function showToast(msg, green = true) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.className = 'toast show' + (green ? ' green' : '');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ─────────────────────────────────────────
+//  Fullscreen
+// ─────────────────────────────────────────
+function toggleFS() {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+}
+
+// ─────────────────────────────────────────
+//  Keyboard nav
+// ─────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (!pdfDoc) return;
+  if (['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changePage(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   changePage(-1);
+  if (e.key === '+') zoom(0.2);
+  if (e.key === '-') zoom(-0.2);
+});
+
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
+</body>
+</html>

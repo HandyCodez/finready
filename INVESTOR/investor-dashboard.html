@@ -10,428 +10,840 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background: #0d1117; color: #e6edf3; min-height: 100vh; overflow: hidden; }
-
-    /* ── Scrollbar ── */
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
 
-    /* ══════════════════════════════
-       SIDEBAR
-    ══════════════════════════════ */
-    #sidebar {
-      width: 256px; flex-shrink: 0;
-      background: #161b22;
-      border-right: 1px solid #21262d;
-      display: flex; flex-direction: column;
-      height: 100vh; overflow: hidden;
-      transition: width .2s ease;
-    }
+    #sidebar { width: 256px; flex-shrink: 0; background: #161b22; border-right: 1px solid #21262d; display: flex; flex-direction: column; height: 100vh; overflow: hidden; transition: width .2s ease; }
     #sidebar.collapsed { width: 60px; }
-    #sidebar.collapsed .nav-label,
-    #sidebar.collapsed .nav-badge,
-    #sidebar.collapsed .sidebar-logo-text,
-    #sidebar.collapsed .nav-group-label,
-    #sidebar.collapsed .user-info,
-    #sidebar.collapsed .sidebar-subtitle { display: none !important; }
+    #sidebar.collapsed .nav-label, #sidebar.collapsed .nav-badge, #sidebar.collapsed .sidebar-logo-text, #sidebar.collapsed .nav-group-label, #sidebar.collapsed .user-info, #sidebar.collapsed .sidebar-subtitle { display: none !important; }
     #sidebar.collapsed .nav-item { justify-content: center; padding: 10px; }
     #sidebar.collapsed .logo-wrap { justify-content: center; padding: 16px 0; }
 
-    .logo-wrap {
-      display: flex; align-items: center; gap: 10px;
-      padding: 16px 16px 14px;
-      border-bottom: 1px solid #21262d;
-      flex-shrink: 0;
-    }
-    .logo-icon {
-      width: 34px; height: 34px; border-radius: 9px;
-      background: linear-gradient(135deg, #1f6feb, #388bfd); /* Warna biru untuk Investor */
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
+    .logo-wrap { display: flex; align-items: center; gap: 10px; padding: 16px 16px 14px; border-bottom: 1px solid #21262d; flex-shrink: 0; }
+    .logo-icon { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #1f6feb, #388bfd); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .sidebar-logo-text { font-family: 'Inter Tight', sans-serif; font-size: 15px; font-weight: 700; color: #f0f6fc; }
     .sidebar-subtitle { font-size: 10px; color: #7d8590; margin-top: 1px; }
-
     .sidebar-nav { flex: 1; overflow-y: auto; padding: 8px 8px; }
-
-    .nav-group-label {
-      font-size: 10px; font-weight: 700; letter-spacing: .08em;
-      text-transform: uppercase; color: #484f58;
-      padding: 12px 10px 5px;
-    }
-
-    .nav-item {
-      display: flex; align-items: center; gap: 9px;
-      padding: 8px 10px; border-radius: 8px;
-      cursor: pointer; transition: all .13s ease;
-      color: #8b949e; font-size: 13.5px; font-weight: 500;
-      margin-bottom: 1px; position: relative;
-      border: 1px solid transparent;
-      user-select: none; white-space: nowrap;
-    }
+    .nav-group-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #484f58; padding: 12px 10px 5px; }
+    .nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 8px; cursor: pointer; transition: all .13s ease; color: #8b949e; font-size: 13.5px; font-weight: 500; margin-bottom: 1px; position: relative; border: 1px solid transparent; user-select: none; white-space: nowrap; }
     .nav-item:hover { background: #21262d; color: #c9d1d9; }
-    .nav-item.active {
-      background: rgba(31,111,235,.12);
-      color: #388bfd; border-color: rgba(31,111,235,.2);
-    }
+    .nav-item.active { background: rgba(31,111,235,.12); color: #388bfd; border-color: rgba(31,111,235,.2); }
     .nav-item.active svg { color: #388bfd; }
     .nav-item svg { width: 15px; height: 15px; flex-shrink: 0; }
-    .nav-badge {
-      margin-left: auto; font-size: 10px; font-weight: 700;
-      padding: 1px 6px; border-radius: 99px;
-    }
+    .nav-badge { margin-left: auto; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 99px; }
     .nav-item.active .nav-badge { background: rgba(31,111,235,.2); color: #388bfd; }
     .nav-item:not(.active) .nav-badge { background: #21262d; color: #8b949e; }
 
-    /* Sidebar user */
-    .sidebar-user {
-      padding: 10px 12px; border-top: 1px solid #21262d; flex-shrink: 0;
-      display: flex; align-items: center; gap: 10px; cursor: pointer;
-      transition: background .13s; position: relative;
-    }
+    .sidebar-user { padding: 10px 12px; border-top: 1px solid #21262d; flex-shrink: 0; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background .13s; }
     .sidebar-user:hover { background: #21262d; }
-    .avatar-sm {
-      width: 30px; height: 30px; border-radius: 50%;
-      background: linear-gradient(135deg, #8957e5, #a371f7); /* Ungu eksklusif */
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0;
-    }
+    .avatar-sm { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #1f6feb, #388bfd); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; }
     .user-info { flex: 1; min-width: 0; }
-    .user-name { font-size: 12.5px; font-weight: 600; color: #c9d1d9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-name { font-size: 12.5px; font-weight: 600; color: #c9d1d9; }
     .user-role { font-size: 10.5px; color: #7d8590; margin-top: 1px; }
 
-    /* ══════════════════════════════
-       TOPBAR & MAIN CONTENT (Shared Styles)
-    ══════════════════════════════ */
-    .topbar {
-      height: 52px; background: #161b22; border-bottom: 1px solid #21262d;
-      display: flex; align-items: center; padding: 0 20px; gap: 12px; flex-shrink: 0;
-    }
+    .topbar { height: 52px; background: #161b22; border-bottom: 1px solid #21262d; display: flex; align-items: center; padding: 0 20px; gap: 12px; flex-shrink: 0; }
     .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12.5px; }
     .breadcrumb a { color: #7d8590; text-decoration: none; transition: color .12s; }
     .breadcrumb a:hover { color: #c9d1d9; }
     .breadcrumb span { color: #c9d1d9; font-weight: 500; }
-    
+
     .main-scroll { flex: 1; overflow-y: auto; background: #0d1117; }
     .content { padding: 24px; max-width: 1400px; }
 
-    /* Stat cards */
-    .stat-card {
-      background: #161b22; border: 1px solid #21262d;
-      border-radius: 12px; padding: 18px 18px 14px;
-      position: relative; overflow: hidden; transition: border-color .2s;
-    }
+    .stat-card { background: #161b22; border: 1px solid #21262d; border-radius: 12px; padding: 18px 18px 14px; position: relative; overflow: hidden; transition: border-color .2s; }
     .stat-card:hover { border-color: #30363d; }
-    .stat-card::after {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-    }
-    .sc-green::after  { background: linear-gradient(90deg,#238636,#3fb950); }
+    .stat-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; border-radius: 12px 12px 0 0; }
     .sc-blue::after   { background: linear-gradient(90deg,#1f6feb,#388bfd); }
+    .sc-green::after  { background: linear-gradient(90deg,#238636,#3fb950); }
+    .sc-amber::after  { background: linear-gradient(90deg,#9e6a03,#d29922); }
+    .sc-red::after    { background: linear-gradient(90deg,#da3633,#f85149); }
     .sc-purple::after { background: linear-gradient(90deg,#8957e5,#a371f7); }
     .sc-teal::after   { background: linear-gradient(90deg,#0d7377,#14a085); }
 
-    .stat-icon {
-      width: 38px; height: 38px; border-radius: 9px;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
+    .stat-icon { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .trend-up   { color: #3fb950; background: rgba(35,134,54,.12); }
+    .trend-down { color: #f85149; background: rgba(218,54,51,.12); }
     .badge-pill { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
 
-    /* Widget & Tables */
     .widget { background: #161b22; border: 1px solid #21262d; border-radius: 12px; overflow: hidden; }
     .widget-hd { padding: 14px 18px 12px; border-bottom: 1px solid #21262d; display: flex; align-items: center; justify-content: space-between; }
     .widget-title { font-size: 13.5px; font-weight: 600; color: #e6edf3; }
     .widget-sub   { font-size: 11.5px; color: #7d8590; margin-top: 1px; }
 
     .fi-tbl { width: 100%; border-collapse: collapse; }
-    .fi-tbl thead th {
-      font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #7d8590;
-      padding: 9px 14px; background: #0d1117; border-bottom: 1px solid #21262d; white-space: nowrap;
-    }
+    .fi-tbl thead th { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #7d8590; padding: 9px 14px; background: #0d1117; border-bottom: 1px solid #21262d; white-space: nowrap; }
     .fi-tbl tbody td { font-size: 13px; color: #c9d1d9; padding: 11px 14px; border-bottom: 1px solid rgba(33,38,45,.8); }
     .fi-tbl tbody tr:hover td { background: rgba(255,255,255,.02); }
+    .fi-tbl tbody tr:last-child td { border-bottom: none; }
 
-    /* Buttons & Inputs */
-    .btn-primary {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: #1f6feb; color: #fff; border: none; border-radius: 8px; padding: 8px 16px;
-      font-size: 13px; font-weight: 600; cursor: pointer; transition: background .13s;
-    }
+    .prog-bg { height: 5px; background: #21262d; border-radius: 99px; overflow: hidden; }
+    .prog-fill { height: 100%; border-radius: 99px; transition: width .6s ease; }
+
+    .tab-pill { padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .13s; color: #7d8590; }
+    .tab-pill.active { background: rgba(31,111,235,.15); color: #388bfd; }
+    .tab-pill:hover:not(.active) { background: #21262d; color: #c9d1d9; }
+
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+    .chart-line { stroke: #21262d; stroke-width: 1; }
+
+    .btn-primary { display: inline-flex; align-items: center; gap: 6px; background: #1f6feb; color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .13s; }
     .btn-primary:hover { background: #388bfd; }
-    .btn-secondary {
-      display: inline-flex; align-items: center; gap: 6px; background: transparent; color: #c9d1d9;
-      border: 1px solid #30363d; border-radius: 8px; padding: 7px 14px;
-      font-size: 13px; font-weight: 500; cursor: pointer; transition: all .13s;
-    }
+    .btn-secondary { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: #c9d1d9; border: 1px solid #30363d; border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; transition: all .13s; }
     .btn-secondary:hover { background: #21262d; border-color: #484f58; }
 
-    .fi-input, .fi-select {
-      background: #0d1117; border: 1px solid #30363d; border-radius: 8px;
-      padding: 8px 12px; font-size: 13px; color: #e6edf3; width: 100%; font-family: inherit;
-    }
-    .fi-input:focus, .fi-select:focus { outline: none; border-color: #388bfd; box-shadow: 0 0 0 3px rgba(31,111,235,.15); }
-    
-    .page-section { display: none; }
-    .page-section.active { display: block; animation: fadeUp .3s ease both; }
-    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-    
-    /* Marketplace Grid */
-    .marketplace-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-    .mp-card { background: #161b22; border: 1px solid #21262d; border-radius: 12px; padding: 18px; transition: all .2s; }
-    .mp-card:hover { border-color: #388bfd; transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.2); }
-    
-    /* Progress Bar */
-    .prog-bg { height: 6px; background: #21262d; border-radius: 99px; overflow: hidden; margin-top: 8px; }
-    .prog-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #1f6feb, #388bfd); }
+    .fi-input { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 8px 12px; font-size: 13px; color: #e6edf3; font-family: inherit; transition: border-color .13s; width: 100%; }
+    .fi-input:focus { outline: none; border-color: #1f6feb; box-shadow: 0 0 0 3px rgba(31,111,235,.15); }
+    .fi-input::placeholder { color: #484f58; }
+    .fi-select { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 8px 12px; font-size: 13px; color: #e6edf3; font-family: inherit; cursor: pointer; }
+    .fi-select:focus { outline: none; border-color: #1f6feb; }
 
-    /* Dropdown */
+    label.fi-label { font-size: 12px; font-weight: 600; color: #8b949e; margin-bottom: 5px; display: block; }
+    .form-card { background: #161b22; border: 1px solid #21262d; border-radius: 12px; padding: 20px; }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    .stagger > * { animation: fadeUp .3s ease both; }
+    .stagger > *:nth-child(1){animation-delay:.03s}
+    .stagger > *:nth-child(2){animation-delay:.06s}
+    .stagger > *:nth-child(3){animation-delay:.09s}
+    .stagger > *:nth-child(4){animation-delay:.12s}
+    .stagger > *:nth-child(5){animation-delay:.15s}
+    .stagger > *:nth-child(6){animation-delay:.18s}
+
+    .notif-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: #f85149; border: 2px solid #161b22; }
+
     .dropdown { position: relative; }
-    .dropdown-menu {
-      position: absolute; right: 0; top: calc(100%+6px); z-index: 200;
-      background: #1c2128; border: 1px solid #30363d; border-radius: 10px;
-      min-width: 180px; padding: 4px; box-shadow: 0 8px 32px rgba(0,0,0,.5); display: none;
-    }
+    .dropdown-menu { position: absolute; right: 0; top: calc(100%+6px); z-index: 200; background: #1c2128; border: 1px solid #30363d; border-radius: 10px; min-width: 180px; padding: 4px; box-shadow: 0 8px 32px rgba(0,0,0,.5); display: none; }
     .dropdown-menu.show { display: block; animation: fadeUp .15s ease; }
     .dd-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 7px; font-size: 12.5px; color: #c9d1d9; cursor: pointer; transition: all .1s; }
     .dd-item:hover { background: #21262d; }
+    .dd-sep { height: 1px; background: #21262d; margin: 3px 0; }
+
+    /* UMKM card grid */
+    .umkm-card { background: #161b22; border: 1px solid #21262d; border-radius: 12px; padding: 16px; transition: all .15s; cursor: pointer; }
+    .umkm-card:hover { border-color: #388bfd; background: #1c2128; transform: translateY(-1px); }
+    .sector-badge { display: inline-flex; padding: 2px 8px; border-radius: 99px; font-size: 10.5px; font-weight: 600; }
+    .risk-bar { height: 4px; border-radius: 99px; background: #21262d; overflow: hidden; margin-top: 6px; }
+    .risk-fill { height: 100%; border-radius: 99px; }
+    /* Star rating */
+    .stars { display: flex; gap: 2px; }
+    .star-fill { color: #d29922; }
+    .star-empty { color: #30363d; }
+
+    /* Portfolio donut */
+    .donut-seg { fill: none; transition: stroke-width .2s; }
+    .donut-seg:hover { stroke-width: 22 !important; }
+
+    /* Score gauge */
+    .gauge-fill { fill: none; stroke-linecap: round; transition: stroke-dashoffset .8s ease; }
   </style>
 </head>
 <body>
 <div style="display:flex;height:100vh;overflow:hidden">
 
+<!-- ══════════ SIDEBAR ══════════ -->
 <aside id="sidebar">
   <div class="logo-wrap">
     <div class="logo-icon">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+      </svg>
     </div>
     <div class="sidebar-logo-text">FinReady
       <div class="sidebar-subtitle">Panel Investor</div>
     </div>
   </div>
 
-  <nav class="sidebar-nav" id="sidebarNav">
+  <nav class="sidebar-nav">
+
     <div class="nav-group-label">Utama</div>
+
     <div class="nav-item active" onclick="showPage('dashboard',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-      <span class="nav-label">Dashboard Overview</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/>
+        <rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>
+      </svg>
+      <span class="nav-label">Dashboard</span>
     </div>
 
-    <div class="nav-group-label">Portofolio Saya</div>
-    <div class="nav-item" onclick="showPage('daftar-investasi',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-      <span class="nav-label">Daftar Investasi</span>
-    </div>
-    <div class="nav-item" onclick="showPage('kinerja',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-      <span class="nav-label">Kinerja Keuangan</span>
+    <div class="nav-group-label">Investasi</div>
+
+    <div class="nav-item" onclick="showPage('portofolio',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M3 3v18h18"/><path d="m7 16 4-4 4 4 4-8"/>
+      </svg>
+      <span class="nav-label">Portofolio Saya</span>
     </div>
 
-    <div class="nav-group-label">Marketplace</div>
-    <div class="nav-item" onclick="showPage('peluang',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-      <span class="nav-label">Cari Peluang UMKM</span>
-      <span class="nav-badge" style="background:rgba(35,134,54,.2);color:#3fb950">Baru</span>
+    <div class="nav-item" onclick="showPage('list-umkm',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      <span class="nav-label">Daftar UMKM</span>
+      <span class="nav-badge">48</span>
     </div>
 
-    <div class="nav-group-label">Administrasi</div>
-    <div class="nav-item" onclick="showPage('riwayat',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+    <div class="nav-item" onclick="showPage('watchlist',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+      <span class="nav-label">Watchlist</span>
+      <span class="nav-badge">6</span>
+    </div>
+
+    <div class="nav-item" onclick="showPage('transaksi',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+      </svg>
       <span class="nav-label">Riwayat Transaksi</span>
     </div>
-    <div class="nav-item" onclick="showPage('profil',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      <span class="nav-label">Profil & Dokumen</span>
+
+    <div class="nav-group-label">Analisis</div>
+
+    <div class="nav-item" onclick="showPage('analisis',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        <path d="M11 8v3l2 2"/>
+      </svg>
+      <span class="nav-label">Analisis Keuangan</span>
     </div>
+
+    <div class="nav-item" onclick="showPage('laporan',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+      </svg>
+      <span class="nav-label">Laporan Investasi</span>
+    </div>
+
+    <div class="nav-group-label">Akun</div>
+
+    <div class="nav-item" onclick="showPage('profil',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      </svg>
+      <span class="nav-label">Profil Investor</span>
+    </div>
+
+    <div class="nav-item" onclick="showPage('pengaturan',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+      <span class="nav-label">Pengaturan</span>
+    </div>
+
   </nav>
 
-  <div class="sidebar-user" onclick="toggleDD('ddUser')">
-    <div class="avatar-sm">DR</div>
+  <div class="sidebar-user" onclick="toggleDD('ddUser')" style="position:relative">
+    <div class="avatar-sm">SR</div>
     <div class="user-info">
-      <div class="user-name">Diana R.</div>
-      <div class="user-role">Investor Terverifikasi</div>
+      <div class="user-name">Siti Rahayu</div>
+      <div class="user-role">Investor Aktif · Premium</div>
     </div>
-    <div class="dropdown-menu" id="ddUser" style="bottom:52px;top:auto;right:8px;left:8px">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7d8590" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+    <div class="dropdown-menu" id="ddUser" style="bottom:52px;top:auto;right:8px">
       <div class="dd-item">Profil Saya</div>
-      <div class="dd-item">Pengaturan Keamanan</div>
-      <div style="height:1px;background:#21262d;margin:3px 0"></div>
+      <div class="dd-item">Pengaturan</div>
+      <div class="dd-sep"></div>
       <div class="dd-item" style="color:#f85149">Keluar</div>
     </div>
   </div>
 </aside>
 
+<!-- ══════════ MAIN ══════════ -->
 <div style="flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden">
-  
+
   <header class="topbar">
-    <button onclick="document.getElementById('sidebar').classList.toggle('collapsed')" style="padding:6px;border-radius:7px;background:transparent;border:none;cursor:pointer;color:#7d8590"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-    
-    <nav class="breadcrumb">
-      <a href="#">FinReady</a> <span style="color:#484f58">›</span> <span id="bcCurrent">Dashboard Overview</span>
+    <button onclick="document.getElementById('sidebar').classList.toggle('collapsed')"
+      style="padding:6px;border-radius:7px;background:transparent;border:none;cursor:pointer;color:#7d8590;transition:all.13s"
+      onmouseover="this.style.background='#21262d';this.style.color='#c9d1d9'"
+      onmouseout="this.style.background='transparent';this.style.color='#7d8590'">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+
+    <nav class="breadcrumb" id="breadcrumb">
+      <a href="#">FinReady</a>
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#484f58" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+      <span id="bcCurrent">Dashboard</span>
     </nav>
 
-    <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
-      <button class="btn-primary" style="font-size:11px;padding:6px 12px;border-radius:99px" onclick="showPage('peluang')">+ Danai UMKM</button>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+      <select class="fi-select" style="font-size:12px;padding:6px 10px;background:#0d1117;border-color:#30363d;color:#c9d1d9">
+        <option selected>Q1 2025</option><option>Q2 2025</option><option>Q3 2025</option><option>Q4 2025</option>
+      </select>
+
       <div class="dropdown">
-        <button onclick="toggleDD('ddNotif')" style="background:transparent;border:none;color:#7d8590;cursor:pointer;position:relative"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span style="position:absolute;top:0;right:0;width:8px;height:8px;background:#388bfd;border-radius:50%;border:2px solid #161b22"></span></button>
-        <div class="dropdown-menu" id="ddNotif" style="width:280px;padding:8px">
-          <div style="font-size:11px;font-weight:700;color:#7d8590;text-transform:uppercase;margin-bottom:8px">Notifikasi</div>
-          <div style="font-size:12px;padding:8px;border-radius:6px;background:#21262d;margin-bottom:4px">Dividen dari <b>Kopi Kenangan Senja</b> telah masuk ke saldo Anda.</div>
+        <button onclick="toggleDD('ddNotif')" style="position:relative;padding:6px;background:transparent;border:none;cursor:pointer;color:#7d8590;border-radius:7px;transition:all.13s"
+          onmouseover="this.style.background='#21262d'" onmouseout="this.style.background='transparent'">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span class="notif-dot"></span>
+        </button>
+        <div class="dropdown-menu" id="ddNotif" style="min-width:260px">
+          <div style="padding:8px 12px 6px;border-bottom:1px solid #21262d;font-size:11px;font-weight:700;color:#7d8590;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Notifikasi</div>
+          <div class="dd-item"><div style="width:26px;height:26px;border-radius:7px;background:rgba(31,111,235,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#388bfd" stroke-width="2.5" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></div><div><div style="font-size:12px">Laporan Q1 Toko Karya Maju siap</div><div style="font-size:10.5px;color:#7d8590;margin-top:1px">10 menit lalu</div></div></div>
+          <div class="dd-item"><div style="width:26px;height:26px;border-radius:7px;background:rgba(35,134,54,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3fb950" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div><div><div style="font-size:12px">Pembayaran imbal hasil diterima</div><div style="font-size:10.5px;color:#7d8590;margin-top:1px">2 jam lalu</div></div></div>
+          <div class="dd-item"><div style="width:26px;height:26px;border-radius:7px;background:rgba(210,153,34,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d29922" stroke-width="2.5" stroke-linecap="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></div><div><div style="font-size:12px">UMKM baru tersedia untuk review</div><div style="font-size:10.5px;color:#7d8590;margin-top:1px">1 hari lalu</div></div></div>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <div onclick="toggleDD('ddTopUser')" style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 8px;border-radius:8px;transition:background.13s" onmouseover="this.style.background='#21262d'" onmouseout="this.style.background='transparent'">
+          <div class="avatar-sm" style="width:28px;height:28px;font-size:10px">SR</div>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7d8590" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="dropdown-menu" id="ddTopUser">
+          <div style="padding:8px 12px 6px;border-bottom:1px solid #21262d;margin-bottom:3px">
+            <div style="font-size:12.5px;font-weight:600;color:#c9d1d9">Siti Rahayu</div>
+            <div style="font-size:11px;color:#7d8590">siti@kapital.id</div>
+          </div>
+          <div class="dd-item">Profil Saya</div>
+          <div class="dd-item">Pengaturan</div>
+          <div class="dd-sep"></div>
+          <div class="dd-item" style="color:#f85149">Keluar</div>
         </div>
       </div>
     </div>
   </header>
 
   <div class="main-scroll">
-  <div class="content">
+  <div class="content" id="pageContent">
 
+    <!-- ████ DASHBOARD ████ -->
     <div class="page-section active" id="page-dashboard">
-      <div style="margin-bottom:20px">
-        <h1 style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:700;color:#f0f6fc">Ringkasan Portofolio</h1>
-        <p style="font-size:12.5px;color:#7d8590;margin-top:3px">Selamat datang, Diana. Berikut adalah performa investasi Anda.</p>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <div>
+          <h1 style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:700;color:#f0f6fc;letter-spacing:-.02em">Dashboard Investor</h1>
+          <p style="font-size:12.5px;color:#7d8590;margin-top:3px">Selamat datang, Siti Rahayu · Q1 2025</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-secondary" style="font-size:12px;padding:7px 13px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export Laporan
+          </button>
+          <button class="btn-primary" style="font-size:12px;padding:7px 13px" onclick="showPage('list-umkm',document.querySelector('[onclick*=\'list-umkm\']'))">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Cari UMKM
+          </button>
+        </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px">
+      <!-- Stats -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:14px;margin-bottom:20px" class="stagger">
         <div class="stat-card sc-blue">
-          <p style="font-size:11px;color:#7d8590;margin-bottom:4px;font-weight:600">Total Nilai Portofolio</p>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <p style="font-size:24px;font-weight:700;color:#f0f6fc;font-family:'Inter Tight',sans-serif" data-count="325000000" data-prefix="Rp " data-scale="jt">0</p>
-            <div class="stat-icon" style="background:rgba(31,111,235,.12)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#388bfd" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+            <div><p style="font-size:11px;color:#7d8590;margin-bottom:4px;font-weight:500">Total Portofolio</p>
+              <p style="font-size:22px;font-weight:700;color:#f0f6fc;font-family:'Inter Tight',sans-serif" data-count="285000000" data-scale="jt">0</p></div>
+            <div class="stat-icon" style="background:rgba(31,111,235,.12)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#388bfd" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="m7 16 4-4 4 4 4-8"/></svg>
+            </div>
           </div>
-          <span class="badge-pill trend-up" style="margin-top:10px">↑ +12.5% vs Tahun Lalu</span>
+          <span class="badge-pill trend-up">↑ +12.4% YTD</span>
         </div>
 
         <div class="stat-card sc-green">
-          <p style="font-size:11px;color:#7d8590;margin-bottom:4px;font-weight:600">Total Imbal Hasil (Diterima)</p>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <p style="font-size:24px;font-weight:700;color:#f0f6fc;font-family:'Inter Tight',sans-serif" data-count="48750000" data-prefix="Rp " data-scale="jt">0</p>
-            <div class="stat-icon" style="background:rgba(35,134,54,.12)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3fb950" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+            <div><p style="font-size:11px;color:#7d8590;margin-bottom:4px;font-weight:500">Total Return</p>
+              <p style="font-size:22px;font-weight:700;color:#f0f6fc;font-family:'Inter Tight',sans-serif" data-count="35400000" data-scale="jt">0</p></div>
+            <div class="stat-icon" style="background:rgba(35,134,54,.12)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3fb950" stroke-width="2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            </div>
           </div>
-          <span class="badge-pill" style="margin-top:10px;background:#21262d;color:#c9d1d9">Avg. Yield 15% p.a.</span>
+          <span class="badge-pill trend-up">↑ 14.2% ROI</span>
         </div>
 
-        <div class="stat-card sc-teal">
-          <p style="font-size:11px;color:#7d8590;margin-bottom:4px;font-weight:600">UMKM Aktif Didanai</p>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <p style="font-size:24px;font-weight:700;color:#f0f6fc;font-family:'Inter Tight',sans-serif" data-count="14">0</p>
-            <div class="stat-icon" style="background:rgba(13,115,119,.12)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14a085" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="stat-card sc-amber">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+            <div><p style="font-size:11px;color:#7d8590;margin-bottom:4px;font-weight:500">UMKM Diinvestasi</p>
+              <p style="font-size:22px;font-weight:700;color:#f0f6fc;font-family:'Inter Tight',sans-serif" data-count="12">0</p></div>
+            <div class="stat-icon" style="background:rgba(158,106,3,.12)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d29922" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </div>
           </div>
-          <span class="badge-pill" style="margin-top:10px;background:#21262d;color:#c9d1d9">Dari 3 Sektor Berbeda</span>
+          <span style="font-size:11px;color:#7d8590">dari 3 sektor berbeda</span>
         </div>
 
         <div class="stat-card sc-purple">
-          <p style="font-size:11px;color:#7d8590;margin-bottom:4px;font-weight:600">Saldo Tersedia (Cash)</p>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <p style="font-size:24px;font-weight:700;color:#f0f6fc;font-family:'Inter Tight',sans-serif" data-count="15000000" data-prefix="Rp " data-scale="jt">0</p>
-            <div class="stat-icon" style="background:rgba(137,87,229,.12)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a371f7" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+            <div><p style="font-size:11px;color:#7d8590;margin-bottom:4px;font-weight:500">Imbal Hasil Bulan Ini</p>
+              <p style="font-size:22px;font-weight:700;color:#f0f6fc;font-family:'Inter Tight',sans-serif" data-count="4200000" data-scale="jt">0</p></div>
+            <div class="stat-icon" style="background:rgba(137,87,229,.12)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a371f7" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
           </div>
-          <div style="margin-top:10px;display:flex;gap:6px">
-            <button class="btn-primary" style="padding:2px 8px;font-size:10px;background:#a371f7;border-radius:4px" onclick="showPage('peluang')">Gunakan Dana</button>
-            <button class="btn-secondary" style="padding:2px 8px;font-size:10px;border-radius:4px">Tarik Dana</button>
+          <span class="badge-pill trend-up">↑ Jadwal terpenuhi</span>
+        </div>
+
+        <div class="stat-card sc-teal">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+            <div><p style="font-size:11px;color:#7d8590;margin-bottom:4px;font-weight:500">Skor Risiko</p>
+              <p style="font-size:22px;font-weight:700;color:#f0f6fc;font-family:'Inter Tight',sans-serif">Rendah</p></div>
+            <div class="stat-icon" style="background:rgba(13,115,119,.12)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14a085" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
           </div>
+          <span style="font-size:11px;color:#7d8590">avg. portofolio</span>
+        </div>
+
+        <div class="stat-card sc-red">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+            <div><p style="font-size:11px;color:#7d8590;margin-bottom:4px;font-weight:500">Dana Tersedia</p>
+              <p style="font-size:22px;font-weight:700;color:#f0f6fc;font-family:'Inter Tight',sans-serif" data-count="48500000" data-scale="jt">0</p></div>
+            <div class="stat-icon" style="background:rgba(218,54,51,.12)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f85149" stroke-width="2" stroke-linecap="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            </div>
+          </div>
+          <span style="font-size:11px;color:#7d8590">siap diinvestasikan</span>
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px">
+      <!-- Chart + Donut row -->
+      <div style="display:grid;grid-template-columns:1fr 360px;gap:16px;margin-bottom:16px">
+        <!-- Return chart -->
         <div class="widget">
           <div class="widget-hd">
-            <div><div class="widget-title">Pertumbuhan Nilai Portofolio</div><div class="widget-sub">12 Bulan Terakhir</div></div>
-          </div>
-          <div style="padding:16px;height:240px;display:flex;align-items:flex-end;gap:10px;border-bottom:1px solid #21262d" id="barChartArea">
+            <div><div class="widget-title">Performa Portofolio</div><div class="widget-sub">Return kumulatif vs benchmark</div></div>
+            <div style="display:flex;gap:6px">
+              <div class="tab-pill active">6 Bulan</div>
+              <div class="tab-pill">1 Tahun</div>
             </div>
-        </div>
-        
-        <div class="widget">
-          <div class="widget-hd"><div class="widget-title">Sebaran Sektor</div></div>
+          </div>
           <div style="padding:16px">
-             <div style="display:flex;justify-content:center;margin-bottom:20px">
-                <div style="position:relative;width:120px;height:120px">
-                  <svg viewBox="0 0 100 100" style="width:100%;transform:rotate(-90deg)">
-                    <circle cx="50" cy="50" r="36" fill="none" stroke="#21262d" stroke-width="16"/>
-                    <circle cx="50" cy="50" r="36" fill="none" stroke="#388bfd" stroke-width="16" stroke-dasharray="226.2" stroke-dashoffset="113.1"/> <circle cx="50" cy="50" r="36" fill="none" stroke="#3fb950" stroke-width="16" stroke-dasharray="226.2" stroke-dashoffset="158.3"/> <circle cx="50" cy="50" r="36" fill="none" stroke="#d29922" stroke-width="16" stroke-dasharray="226.2" stroke-dashoffset="180.9"/> </svg>
-                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-weight:700;font-size:14px">14</div><div style="font-size:9px;color:#7d8590">UMKM</div></div>
+            <svg viewBox="0 0 540 160" style="width:100%">
+              <line x1="0" y1="20" x2="540" y2="20" class="chart-line"/>
+              <line x1="0" y1="55" x2="540" y2="55" class="chart-line"/>
+              <line x1="0" y1="90" x2="540" y2="90" class="chart-line"/>
+              <line x1="0" y1="125" x2="540" y2="125" class="chart-line"/>
+              <text x="0" y="18" fill="#484f58" font-size="9">+20%</text>
+              <text x="0" y="53" fill="#484f58" font-size="9">+15%</text>
+              <text x="0" y="88" fill="#484f58" font-size="9">+10%</text>
+              <text x="0" y="123" fill="#484f58" font-size="9">+5%</text>
+              <defs>
+                <linearGradient id="pg1" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#1f6feb" stop-opacity=".3"/>
+                  <stop offset="100%" stop-color="#1f6feb" stop-opacity="0"/>
+                </linearGradient>
+                <linearGradient id="pg2" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#a371f7" stop-opacity=".15"/>
+                  <stop offset="100%" stop-color="#a371f7" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <!-- Portfolio -->
+              <path d="M50,115 C90,100 130,80 190,65 C250,50 290,38 350,28 C400,20 450,22 510,18 L510,140 L50,140Z" fill="url(#pg1)"/>
+              <!-- Benchmark -->
+              <path d="M50,120 C90,112 130,100 190,90 C250,80 290,75 350,70 C400,66 450,62 510,58 L510,140 L50,140Z" fill="url(#pg2)"/>
+              <!-- Portfolio line -->
+              <path d="M50,115 C90,100 130,80 190,65 C250,50 290,38 350,28 C400,20 450,22 510,18" fill="none" stroke="#388bfd" stroke-width="2.5" stroke-linecap="round"/>
+              <!-- Benchmark line -->
+              <path d="M50,120 C90,112 130,100 190,90 C250,80 290,75 350,70 C400,66 450,62 510,58" fill="none" stroke="#a371f7" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="5,3"/>
+              <circle cx="510" cy="18"  r="4" fill="#388bfd" stroke="#0d1117" stroke-width="2"/>
+              <circle cx="510" cy="58"  r="3" fill="#a371f7" stroke="#0d1117" stroke-width="2"/>
+              <text x="50"  y="150" fill="#484f58" font-size="9" text-anchor="middle">Okt</text>
+              <text x="150" y="150" fill="#484f58" font-size="9" text-anchor="middle">Nov</text>
+              <text x="250" y="150" fill="#484f58" font-size="9" text-anchor="middle">Des</text>
+              <text x="350" y="150" fill="#484f58" font-size="9" text-anchor="middle">Jan</text>
+              <text x="430" y="150" fill="#484f58" font-size="9" text-anchor="middle">Feb</text>
+              <text x="510" y="150" fill="#484f58" font-size="9" text-anchor="middle">Mar</text>
+            </svg>
+            <div style="display:flex;gap:16px;margin-top:4px">
+              <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#7d8590"><div style="width:12px;height:2.5px;background:#388bfd;border-radius:99px"></div>Portofolio (+14.2%)</div>
+              <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#7d8590"><div style="width:12px;height:2px;background:#a371f7;border-radius:99px"></div>Benchmark (+8.1%)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alokasi Portofolio -->
+        <div class="widget">
+          <div class="widget-hd"><div><div class="widget-title">Alokasi Portofolio</div><div class="widget-sub">Per sektor</div></div></div>
+          <div style="padding:16px">
+            <div style="display:flex;justify-content:center;margin-bottom:14px">
+              <div style="position:relative;width:110px;height:110px">
+                <svg viewBox="0 0 100 100" style="width:100%;transform:rotate(-90deg)">
+                  <circle cx="50" cy="50" r="36" fill="none" stroke="#21262d" stroke-width="16"/>
+                  <circle cx="50" cy="50" r="36" fill="none" stroke="#388bfd" stroke-width="16" stroke-dasharray="226.2" stroke-dashoffset="90.5"/>
+                  <circle cx="50" cy="50" r="36" fill="none" stroke="#3fb950" stroke-width="16" stroke-dasharray="226.2" stroke-dashoffset="135.7"/>
+                  <circle cx="50" cy="50" r="36" fill="none" stroke="#d29922" stroke-width="16" stroke-dasharray="226.2" stroke-dashoffset="181.0"/>
+                  <circle cx="50" cy="50" r="36" fill="none" stroke="#a371f7" stroke-width="16" stroke-dasharray="226.2" stroke-dashoffset="215.9"/>
+                </svg>
+                <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+                  <div style="font-size:15px;font-weight:700;color:#f0f6fc">285jt</div>
+                  <div style="font-size:9px;color:#7d8590">total</div>
                 </div>
-             </div>
-             <div>
-                <div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-bottom:1px solid #21262d"><span style="display:flex;align-items:center;gap:6px"><div style="width:10px;height:10px;background:#388bfd;border-radius:2px"></div> F&B (Kuliner)</span><b>50%</b></div>
-                <div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-bottom:1px solid #21262d"><span style="display:flex;align-items:center;gap:6px"><div style="width:10px;height:10px;background:#3fb950;border-radius:2px"></div> Retail & Grosir</span><b>30%</b></div>
-                <div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 0"><span style="display:flex;align-items:center;gap:6px"><div style="width:10px;height:10px;background:#d29922;border-radius:2px"></div> Jasa Kreatif</span><b>20%</b></div>
-             </div>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:12px;border-bottom:1px solid #21262d"><div style="display:flex;align-items:center;gap:7px"><div style="width:9px;height:9px;border-radius:2px;background:#388bfd"></div>Perdagangan</div><span style="font-weight:600;color:#c9d1d9">40% · 114jt</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:12px;border-bottom:1px solid #21262d"><div style="display:flex;align-items:center;gap:7px"><div style="width:9px;height:9px;border-radius:2px;background:#3fb950"></div>Kuliner</div><span style="font-weight:600;color:#c9d1d9">20% · 57jt</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:12px;border-bottom:1px solid #21262d"><div style="display:flex;align-items:center;gap:7px"><div style="width:9px;height:9px;border-radius:2px;background:#d29922"></div>Manufaktur</div><span style="font-weight:600;color:#c9d1d9">20% · 57jt</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:12px"><div style="display:flex;align-items:center;gap:7px"><div style="width:9px;height:9px;border-radius:2px;background:#a371f7"></div>Lainnya</div><span style="font-weight:600;color:#c9d1d9">20% · 57jt</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top UMKM + Recent activity -->
+      <div style="display:grid;grid-template-columns:1fr 340px;gap:16px">
+        <!-- Top investasi table -->
+        <div class="widget">
+          <div class="widget-hd">
+            <div><div class="widget-title">Portofolio Aktif</div><div class="widget-sub">12 UMKM · Terurut by Return</div></div>
+            <button class="btn-secondary" style="font-size:11.5px;padding:5px 12px" onclick="showPage('portofolio',document.querySelector('[onclick*=\'portofolio\']'))">Lihat semua →</button>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="fi-tbl">
+              <thead><tr>
+                <th style="text-align:left">UMKM</th>
+                <th style="text-align:left">Sektor</th>
+                <th style="text-align:right">Investasi</th>
+                <th style="text-align:right">Return</th>
+                <th style="text-align:right">ROI</th>
+                <th style="text-align:center">Status</th>
+              </tr></thead>
+              <tbody id="portfolioTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Aktivitas -->
+        <div class="widget">
+          <div class="widget-hd"><div><div class="widget-title">Aktivitas Terbaru</div><div class="widget-sub">Update real-time</div></div>
+            <span style="display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:#388bfd"><span style="width:5px;height:5px;border-radius:50%;background:#388bfd;animation:pulse 2s infinite"></span>LIVE</span>
+          </div>
+          <div style="padding:12px;space-y:10px" id="activityFeed">
           </div>
         </div>
       </div>
     </div>
 
-    <div class="page-section" id="page-daftar-investasi">
-      <div style="margin-bottom:20px;display:flex;justify-content:space-between">
-        <div><h1 style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:700">Daftar Investasi Aktif</h1><p style="font-size:12.5px;color:#7d8590;margin-top:3px">Detail UMKM yang sedang Anda danai</p></div>
-        <input type="text" class="fi-input" placeholder="Cari UMKM..." style="width:250px">
+    <!-- ████ PORTOFOLIO ████ -->
+    <div class="page-section" id="page-portofolio">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <div><h1 style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:700;color:#f0f6fc">Portofolio Saya</h1><p style="font-size:12.5px;color:#7d8590;margin-top:3px">12 UMKM aktif · Total Rp 285jt</p></div>
+        <div style="display:flex;gap:8px">
+          <select class="fi-select" style="font-size:12px">
+            <option>Semua Sektor</option><option>Perdagangan</option><option>Kuliner</option><option>Manufaktur</option>
+          </select>
+          <select class="fi-select" style="font-size:12px">
+            <option>Semua Status</option><option>Aktif</option><option>Pending</option>
+          </select>
+        </div>
       </div>
+
+      <!-- Summary row -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+        <div class="form-card" style="text-align:center">
+          <div style="font-size:20px;font-weight:700;color:#388bfd;font-family:'Inter Tight',sans-serif">Rp 285jt</div>
+          <div style="font-size:11px;color:#7d8590;margin-top:3px">Total Investasi</div>
+        </div>
+        <div class="form-card" style="text-align:center">
+          <div style="font-size:20px;font-weight:700;color:#3fb950;font-family:'Inter Tight',sans-serif">Rp 35.4jt</div>
+          <div style="font-size:11px;color:#7d8590;margin-top:3px">Total Return</div>
+        </div>
+        <div class="form-card" style="text-align:center">
+          <div style="font-size:20px;font-weight:700;color:#d29922;font-family:'Inter Tight',sans-serif">14.2%</div>
+          <div style="font-size:11px;color:#7d8590;margin-top:3px">Avg. ROI</div>
+        </div>
+        <div class="form-card" style="text-align:center">
+          <div style="font-size:20px;font-weight:700;color:#a371f7;font-family:'Inter Tight',sans-serif">Rendah</div>
+          <div style="font-size:11px;color:#7d8590;margin-top:3px">Risiko Avg.</div>
+        </div>
+      </div>
+
+      <!-- Portofolio cards grid -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px" id="portfolioCards"></div>
+    </div>
+
+    <!-- ████ LIST UMKM ████ -->
+    <div class="page-section" id="page-list-umkm">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <div><h1 style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:700;color:#f0f6fc">Daftar UMKM</h1><p style="font-size:12.5px;color:#7d8590;margin-top:3px">48 UMKM terdaftar · Tersedia untuk investasi</p></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <input type="text" class="fi-input" placeholder="Cari nama UMKM..." style="width:200px;padding:7px 12px;font-size:12.5px">
+          <select class="fi-select" style="font-size:12px"><option>Semua Sektor</option><option>Perdagangan</option><option>Kuliner</option><option>Manufaktur</option><option>Jasa</option></select>
+          <select class="fi-select" style="font-size:12px"><option>Semua Risiko</option><option>Rendah</option><option>Sedang</option><option>Tinggi</option></select>
+          <select class="fi-select" style="font-size:12px"><option>Return ↓</option><option>Nama A-Z</option><option>Terbaru</option><option>Investasi Terkecil</option></select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px" id="umkmGrid"></div>
+    </div>
+
+    <!-- ████ WATCHLIST ████ -->
+    <div class="page-section" id="page-watchlist">
+      <div style="margin-bottom:20px"><h1 style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:700;color:#f0f6fc">Watchlist</h1><p style="font-size:12.5px;color:#7d8590;margin-top:3px">6 UMKM dalam pantauan</p></div>
       <div class="widget">
         <table class="fi-tbl">
-          <thead>
-            <tr><th>Nama UMKM</th><th>Sektor</th><th style="text-align:right">Nilai Investasi</th><th style="text-align:right">Est. Yield (p.a)</th><th>Jatuh Tempo</th><th>Status Pengembalian</th></tr>
-          </thead>
-          <tbody id="investTable">
-            </tbody>
+          <thead><tr>
+            <th style="text-align:left">UMKM</th>
+            <th style="text-align:left">Sektor</th>
+            <th style="text-align:right">Laba Bersih</th>
+            <th style="text-align:right">Proyeksi ROI</th>
+            <th style="text-align:center">Risiko</th>
+            <th style="text-align:center">Skor</th>
+            <th style="text-align:center">Aksi</th>
+          </tr></thead>
+          <tbody id="watchlistTable"></tbody>
         </table>
       </div>
     </div>
 
-    <div class="page-section" id="page-peluang">
-      <div style="margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end">
-        <div>
-          <h1 style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:700">Peluang Pendanaan Baru</h1>
-          <p style="font-size:12.5px;color:#7d8590;margin-top:3px">Bantu UMKM berkembang dan dapatkan imbal hasil menarik.</p>
-        </div>
-        <div style="display:flex;gap:10px">
-          <select class="fi-select" style="width:auto;font-size:12px"><option>Semua Sektor</option><option>F&B</option><option>Retail</option></select>
-          <select class="fi-select" style="width:auto;font-size:12px"><option>Risiko Rendah</option><option>Risiko Menengah</option></select>
-        </div>
+    <!-- ████ TRANSAKSI ████ -->
+    <div class="page-section" id="page-transaksi">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div><h1 style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:700;color:#f0f6fc">Riwayat Transaksi</h1><p style="font-size:12.5px;color:#7d8590;margin-top:3px">Semua aktivitas keuangan investasi</p></div>
+        <button class="btn-secondary" style="font-size:12px">Export CSV</button>
       </div>
-
-      <div class="marketplace-grid" id="marketGrid">
-        </div>
-    </div>
-
-    <div class="page-section" id="page-kinerja">
-      <div style="margin-bottom:20px"><h1 style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:700">Kinerja Keuangan</h1><p style="font-size:12.5px;color:#7d8590">Analisis imbal hasil dan cashflow investasi.</p></div>
-      <div class="widget" style="padding:40px;text-align:center;color:#7d8590">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 10px;opacity:0.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        <p>Fitur Laporan Kinerja Lanjutan (IRR, NPV Chart) tersedia di update mendatang.</p>
-        <button class="btn-secondary" style="margin-top:10px" onclick="showPage('dashboard')">Kembali ke Dashboard</button>
-      </div>
-    </div>
-
-    <div class="page-section" id="page-riwayat">
-      <div style="margin-bottom:20px"><h1 style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:700">Riwayat Transaksi</h1></div>
       <div class="widget">
         <table class="fi-tbl">
-          <thead><tr><th>Tanggal</th><th>Jenis Transaksi</th><th>Deskripsi</th><th style="text-align:right">Nominal</th><th>Status</th></tr></thead>
-          <tbody id="historyTable">
-            </tbody>
+          <thead><tr>
+            <th style="text-align:left">Tanggal</th>
+            <th style="text-align:left">UMKM</th>
+            <th style="text-align:left">Jenis</th>
+            <th style="text-align:right">Jumlah</th>
+            <th style="text-align:center">Status</th>
+          </tr></thead>
+          <tbody id="txTable"></tbody>
         </table>
+        <div style="padding:10px 16px;border-top:1px solid #21262d;display:flex;justify-content:space-between;font-size:12px;color:#7d8590">
+          <span>Menampilkan 1–10 dari 34 transaksi</span>
+          <div style="display:flex;gap:4px">
+            <button style="width:28px;height:28px;background:#21262d;border:none;border-radius:6px;color:#c9d1d9;cursor:pointer;font-size:12px">‹</button>
+            <button style="width:28px;height:28px;background:#1f6feb;border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:12px;font-weight:700">1</button>
+            <button style="width:28px;height:28px;background:#21262d;border:none;border-radius:6px;color:#c9d1d9;cursor:pointer;font-size:12px">2</button>
+            <button style="width:28px;height:28px;background:#21262d;border:none;border-radius:6px;color:#c9d1d9;cursor:pointer;font-size:12px">›</button>
+          </div>
+        </div>
       </div>
     </div>
 
+    <!-- ████ ANALISIS ████ -->
+    <div class="page-section" id="page-analisis">
+      <div style="margin-bottom:20px"><h1 style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:700;color:#f0f6fc">Analisis Keuangan UMKM</h1><p style="font-size:12.5px;color:#7d8590;margin-top:3px">Bandingkan dan evaluasi performa keuangan</p></div>
+
+      <!-- UMKM selector -->
+      <div class="form-card" style="margin-bottom:20px">
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end">
+          <div><label class="fi-label">Pilih UMKM</label><select class="fi-input"><option>Toko Karya Maju</option><option>Warung Sejahtera</option><option>Batik Makmur</option></select></div>
+          <div><label class="fi-label">Periode</label><select class="fi-input"><option>Q1 2025</option><option>Q4 2024</option><option>Tahunan 2024</option></select></div>
+          <button class="btn-primary">Analisis</button>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <!-- Rasio keuangan -->
+        <div class="widget">
+          <div class="widget-hd"><div class="widget-title">Rasio Keuangan</div><div class="widget-sub">Toko Karya Maju · Q1 2025</div></div>
+          <div style="padding:16px;display:grid;gap:12px">
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span style="color:#c9d1d9">Net Profit Margin</span><span style="color:#3fb950;font-weight:600">31.2%</span></div>
+              <div class="prog-bg"><div class="prog-fill" style="width:31.2%;background:#3fb950"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span style="color:#c9d1d9">Gross Profit Margin</span><span style="color:#388bfd;font-weight:600">68.1%</span></div>
+              <div class="prog-bg"><div class="prog-fill" style="width:68.1%;background:#388bfd"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span style="color:#c9d1d9">Current Ratio</span><span style="color:#d29922;font-weight:600">2.95</span></div>
+              <div class="prog-bg"><div class="prog-fill" style="width:74%;background:#d29922"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span style="color:#c9d1d9">Debt to Equity</span><span style="color:#f85149;font-weight:600">0.35</span></div>
+              <div class="prog-bg"><div class="prog-fill" style="width:35%;background:#f85149"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span style="color:#c9d1d9">Return on Equity</span><span style="color:#a371f7;font-weight:600">22.4%</span></div>
+              <div class="prog-bg"><div class="prog-fill" style="width:44.8%;background:#a371f7"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Skor investasi -->
+        <div class="widget">
+          <div class="widget-hd"><div class="widget-title">Skor Kelayakan Investasi</div><div class="widget-sub">Berdasarkan 5 kriteria</div></div>
+          <div style="padding:20px;display:flex;flex-direction:column;align-items:center">
+            <div style="position:relative;width:130px;height:80px;margin-bottom:16px">
+              <svg viewBox="0 0 130 80" style="width:100%">
+                <path d="M 15 70 A 50 50 0 0 1 115 70" fill="none" stroke="#21262d" stroke-width="12" stroke-linecap="round"/>
+                <path d="M 15 70 A 50 50 0 0 1 115 70" fill="none" stroke="#388bfd" stroke-width="12" stroke-linecap="round" stroke-dasharray="157" stroke-dashoffset="47"/>
+              </svg>
+              <div style="position:absolute;bottom:4px;left:50%;transform:translateX(-50%);text-align:center">
+                <div style="font-size:24px;font-weight:700;color:#388bfd;font-family:'Inter Tight',sans-serif">82</div>
+                <div style="font-size:9px;color:#7d8590">/100</div>
+              </div>
+            </div>
+            <div style="font-size:13px;font-weight:700;color:#3fb950;margin-bottom:14px">Sangat Layak</div>
+            <div style="width:100%;display:grid;gap:8px">
+              <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:#7d8590">Kesehatan Keuangan</span><span style="color:#3fb950;font-weight:600">★★★★☆</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:#7d8590">Pertumbuhan</span><span style="color:#3fb950;font-weight:600">★★★★★</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:#7d8590">Manajemen Risiko</span><span style="color:#d29922;font-weight:600">★★★☆☆</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:#7d8590">Likuiditas</span><span style="color:#3fb950;font-weight:600">★★★★☆</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:#7d8590">Profitabilitas</span><span style="color:#3fb950;font-weight:600">★★★★★</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tren laba -->
+      <div class="widget">
+        <div class="widget-hd"><div><div class="widget-title">Tren Laba Bersih</div><div class="widget-sub">Toko Karya Maju · 6 Kuartal</div></div></div>
+        <div style="padding:16px">
+          <svg viewBox="0 0 540 120" style="width:100%">
+            <line x1="0" y1="20" x2="540" y2="20" class="chart-line"/>
+            <line x1="0" y1="60" x2="540" y2="60" class="chart-line"/>
+            <line x1="0" y1="100" x2="540" y2="100" class="chart-line"/>
+            <text x="0" y="18" fill="#484f58" font-size="9">60jt</text>
+            <text x="0" y="58" fill="#484f58" font-size="9">40jt</text>
+            <text x="0" y="98" fill="#484f58" font-size="9">20jt</text>
+            <defs><linearGradient id="ag1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3fb950" stop-opacity=".3"/><stop offset="100%" stop-color="#3fb950" stop-opacity="0"/></linearGradient></defs>
+            <path d="M60,85 L150,75 L240,65 L330,50 L420,38 L510,25 L510,110 L60,110Z" fill="url(#ag1)"/>
+            <path d="M60,85 L150,75 L240,65 L330,50 L420,38 L510,25" fill="none" stroke="#3fb950" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="60"  cy="85" r="3.5" fill="#3fb950" stroke="#0d1117" stroke-width="2"/>
+            <circle cx="150" cy="75" r="3.5" fill="#3fb950" stroke="#0d1117" stroke-width="2"/>
+            <circle cx="240" cy="65" r="3.5" fill="#3fb950" stroke="#0d1117" stroke-width="2"/>
+            <circle cx="330" cy="50" r="3.5" fill="#3fb950" stroke="#0d1117" stroke-width="2"/>
+            <circle cx="420" cy="38" r="3.5" fill="#3fb950" stroke="#0d1117" stroke-width="2"/>
+            <circle cx="510" cy="25" r="4"   fill="#3fb950" stroke="#0d1117" stroke-width="2"/>
+            <text x="60"  y="115" fill="#484f58" font-size="9" text-anchor="middle">Q4'23</text>
+            <text x="150" y="115" fill="#484f58" font-size="9" text-anchor="middle">Q1'24</text>
+            <text x="240" y="115" fill="#484f58" font-size="9" text-anchor="middle">Q2'24</text>
+            <text x="330" y="115" fill="#484f58" font-size="9" text-anchor="middle">Q3'24</text>
+            <text x="420" y="115" fill="#484f58" font-size="9" text-anchor="middle">Q4'24</text>
+            <text x="510" y="115" fill="#484f58" font-size="9" text-anchor="middle">Q1'25</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ████ LAPORAN ████ -->
+    <div class="page-section" id="page-laporan">
+      <div style="margin-bottom:20px"><h1 style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:700;color:#f0f6fc">Laporan Investasi</h1><p style="font-size:12.5px;color:#7d8590;margin-top:3px">Ringkasan performa seluruh portofolio</p></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div class="widget">
+          <div class="widget-hd"><div class="widget-title">Ringkasan Imbal Hasil</div><div class="widget-sub">Q1 2025</div></div>
+          <table class="fi-tbl">
+            <tbody>
+              <tr style="background:rgba(31,111,235,.04)"><td colspan="2" style="padding:8px 14px;font-size:11px;font-weight:700;color:#388bfd;text-transform:uppercase;letter-spacing:.06em">PENDAPATAN INVESTASI</td></tr>
+              <tr><td style="padding-left:24px">Imbal Hasil Perdagangan</td><td style="text-align:right;color:#3fb950">18.200.000</td></tr>
+              <tr><td style="padding-left:24px">Imbal Hasil Kuliner</td><td style="text-align:right;color:#3fb950">8.600.000</td></tr>
+              <tr><td style="padding-left:24px">Imbal Hasil Manufaktur</td><td style="text-align:right;color:#3fb950">8.600.000</td></tr>
+              <tr style="background:#21262d"><td style="font-weight:700">Total Imbal Hasil</td><td style="text-align:right;font-weight:700;color:#3fb950">35.400.000</td></tr>
+              <tr><td style="padding-left:24px">Biaya Administrasi (1%)</td><td style="text-align:right;color:#f85149">(2.850.000)</td></tr>
+              <tr style="background:rgba(35,134,54,.08)"><td style="font-weight:700;font-size:14px;color:#3fb950;padding:12px 14px">Return Bersih</td><td style="text-align:right;font-weight:700;font-size:14px;color:#3fb950;padding:12px 14px">Rp 32.550.000</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="widget">
+          <div class="widget-hd"><div class="widget-title">Distribusi Risiko Portofolio</div><div class="widget-sub">Berdasarkan skor risiko</div></div>
+          <div style="padding:16px">
+            <div style="display:grid;gap:10px">
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#c9d1d9">Risiko Rendah <span style="color:#7d8590">(7 UMKM)</span></span><span style="color:#3fb950;font-weight:600">58%</span></div>
+                <div class="prog-bg"><div class="prog-fill" style="width:58%;background:#3fb950"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#c9d1d9">Risiko Sedang <span style="color:#7d8590">(4 UMKM)</span></span><span style="color:#d29922;font-weight:600">33%</span></div>
+                <div class="prog-bg"><div class="prog-fill" style="width:33%;background:#d29922"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:#c9d1d9">Risiko Tinggi <span style="color:#7d8590">(1 UMKM)</span></span><span style="color:#f85149;font-weight:600">9%</span></div>
+                <div class="prog-bg"><div class="prog-fill" style="width:9%;background:#f85149"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ████ PROFIL ████ -->
     <div class="page-section" id="page-profil">
-      <div style="margin-bottom:20px"><h1 style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:700">Profil Investor</h1></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
-        <div class="widget" style="padding:24px">
-          <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;border-bottom:1px solid #21262d;padding-bottom:10px">Data Pribadi</h3>
+      <div style="margin-bottom:20px"><h1 style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:700;color:#f0f6fc">Profil Investor</h1></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="form-card">
+          <h3 style="font-size:13px;font-weight:700;color:#c9d1d9;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #21262d">Informasi Pribadi</h3>
           <div style="display:grid;gap:12px">
-            <div><label style="font-size:11px;color:#7d8590;font-weight:600">Nama Lengkap</label><input class="fi-input" value="Diana Ratnasari" disabled></div>
-            <div><label style="font-size:11px;color:#7d8590;font-weight:600">Email</label><input class="fi-input" value="diana.r@investor.id" disabled></div>
-            <div><label style="font-size:11px;color:#7d8590;font-weight:600">No. Rekening Penarikan (BCA)</label><input class="fi-input" value="**** **** 8892"></div>
-            <button class="btn-primary" style="margin-top:10px">Simpan Perubahan</button>
+            <div><label class="fi-label">Nama Lengkap</label><input class="fi-input" value="Siti Rahayu"></div>
+            <div><label class="fi-label">Email</label><input class="fi-input" value="siti@kapital.id"></div>
+            <div><label class="fi-label">No. HP</label><input class="fi-input" value="+62 812 3456 7890"></div>
+            <div><label class="fi-label">Tipe Investor</label>
+              <select class="fi-input"><option selected>Investor Aktif</option><option>Investor Pasif</option><option>Investor Institusi</option></select>
+            </div>
+            <div><label class="fi-label">Profil Risiko</label>
+              <select class="fi-input"><option>Konservatif</option><option selected>Moderat</option><option>Agresif</option></select>
+            </div>
+          </div>
+          <button class="btn-primary" style="margin-top:16px">Simpan Perubahan</button>
+        </div>
+
+        <div style="display:grid;gap:16px">
+          <div class="form-card">
+            <h3 style="font-size:13px;font-weight:700;color:#c9d1d9;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #21262d">Paket Langganan</h3>
+            <div style="background:rgba(31,111,235,.08);border:1px solid rgba(31,111,235,.2);border-radius:10px;padding:14px;margin-bottom:14px">
+              <div style="font-size:14px;font-weight:700;color:#388bfd">Paket Premium</div>
+              <div style="font-size:11.5px;color:#7d8590;margin-top:3px">Aktif hingga 31 Desember 2025</div>
+              <div style="margin-top:10px;font-size:12px;color:#c9d1d9">✓ Akses laporan keuangan penuh · ✓ Analisis AI · ✓ Notifikasi real-time</div>
+            </div>
+            <button class="btn-secondary" style="width:100%;justify-content:center">Kelola Langganan</button>
+          </div>
+
+          <div class="form-card">
+            <h3 style="font-size:13px;font-weight:700;color:#c9d1d9;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #21262d">Preferensi Investasi</h3>
+            <div style="display:grid;gap:10px">
+              <div><label class="fi-label">Min. Investasi</label><input class="fi-input" value="Rp 10.000.000"></div>
+              <div><label class="fi-label">Max. per UMKM</label><input class="fi-input" value="Rp 50.000.000"></div>
+              <div><label class="fi-label">Target ROI / Tahun</label><input class="fi-input" value="12%"></div>
+            </div>
           </div>
         </div>
-        <div class="widget" style="padding:24px">
-          <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;border-bottom:1px solid #21262d;padding-bottom:10px">Dokumen & Pajak</h3>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:#21262d;border-radius:8px;margin-bottom:10px">
-            <div><div style="font-size:13px;font-weight:600">Bukti Potong Pajak 2024</div><div style="font-size:11px;color:#7d8590">PDF · 124 KB</div></div>
-            <button class="btn-secondary" style="padding:4px 10px;font-size:11px">Unduh</button>
+      </div>
+    </div>
+
+    <!-- ████ PENGATURAN ████ -->
+    <div class="page-section" id="page-pengaturan">
+      <div style="margin-bottom:20px"><h1 style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:700;color:#f0f6fc">Pengaturan</h1></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="form-card">
+          <h3 style="font-size:13px;font-weight:700;color:#c9d1d9;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #21262d">Notifikasi</h3>
+          <div style="display:grid;gap:12px">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #21262d">
+              <div><div style="font-size:13px;color:#c9d1d9">Laporan keuangan baru</div><div style="font-size:11px;color:#7d8590;margin-top:1px">Saat UMKM upload laporan baru</div></div>
+              <input type="checkbox" checked style="accent-color:#388bfd;width:16px;height:16px">
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #21262d">
+              <div><div style="font-size:13px;color:#c9d1d9">Imbal hasil diterima</div><div style="font-size:11px;color:#7d8590;margin-top:1px">Setiap pembayaran return</div></div>
+              <input type="checkbox" checked style="accent-color:#388bfd;width:16px;height:16px">
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #21262d">
+              <div><div style="font-size:13px;color:#c9d1d9">UMKM baru tersedia</div><div style="font-size:11px;color:#7d8590;margin-top:1px">Peluang investasi baru</div></div>
+              <input type="checkbox" checked style="accent-color:#388bfd;width:16px;height:16px">
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0">
+              <div><div style="font-size:13px;color:#c9d1d9">Alert risiko portofolio</div><div style="font-size:11px;color:#7d8590;margin-top:1px">Skor risiko berubah signifikan</div></div>
+              <input type="checkbox" style="accent-color:#388bfd;width:16px;height:16px">
+            </div>
           </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:#21262d;border-radius:8px">
-            <div><div style="font-size:13px;font-weight:600">Kontrak Layanan Investor</div><div style="font-size:11px;color:#7d8590">Aktif sejak Jan 2023</div></div>
-            <button class="btn-secondary" style="padding:4px 10px;font-size:11px">Lihat</button>
+        </div>
+        <div class="form-card">
+          <h3 style="font-size:13px;font-weight:700;color:#c9d1d9;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #21262d">Keamanan Akun</h3>
+          <div style="display:grid;gap:12px">
+            <div><label class="fi-label">Password Lama</label><input type="password" class="fi-input" placeholder="••••••••"></div>
+            <div><label class="fi-label">Password Baru</label><input type="password" class="fi-input" placeholder="Min. 8 karakter"></div>
+            <div><label class="fi-label">Konfirmasi Password</label><input type="password" class="fi-input" placeholder="Ulangi password baru"></div>
+          </div>
+          <button class="btn-primary" style="margin-top:16px">Ubah Password</button>
+          <div style="margin-top:16px;padding-top:14px;border-top:1px solid #21262d">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div><div style="font-size:13px;color:#c9d1d9">Autentikasi Dua Faktor</div><div style="font-size:11px;color:#7d8590;margin-top:1px">Keamanan ekstra untuk akun Anda</div></div>
+              <button class="btn-secondary" style="font-size:12px;padding:5px 12px">Aktifkan</button>
+            </div>
           </div>
         </div>
       </div>
@@ -443,110 +855,253 @@
 </div>
 
 <script>
-// Navigasi
+// ── Navigation ──
+const pageNames = {
+  'dashboard':'Dashboard','portofolio':'Portofolio Saya','list-umkm':'Daftar UMKM',
+  'watchlist':'Watchlist','transaksi':'Riwayat Transaksi','analisis':'Analisis Keuangan',
+  'laporan':'Laporan Investasi','profil':'Profil Investor','pengaturan':'Pengaturan'
+};
+
 function showPage(id, navEl) {
   document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
   document.getElementById('page-'+id)?.classList.add('active');
-  
-  const pageTitles = {'dashboard':'Dashboard Overview','daftar-investasi':'Daftar Investasi','kinerja':'Kinerja Keuangan','peluang':'Cari Peluang UMKM','riwayat':'Riwayat Transaksi','profil':'Profil & Dokumen'};
-  document.getElementById('bcCurrent').textContent = pageTitles[id] || id;
-
-  if (navEl) {
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    navEl.classList.add('active');
-  }
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (navEl) navEl.classList.add('active');
+  else document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick')?.includes("'"+id+"'")) n.classList.add('active');
+  });
+  document.getElementById('bcCurrent').textContent = pageNames[id] || id;
+  document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('show'));
 }
 
-// Dropdown
+// ── Dropdowns ──
 function toggleDD(id) {
   const el = document.getElementById(id);
-  const isShow = el.classList.contains('show');
+  const open = el.classList.contains('show');
   document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('show'));
-  if (!isShow) el.classList.add('show');
+  if (!open) el.classList.add('show');
 }
-window.onclick = e => { if (!e.target.closest('.dropdown') && !e.target.closest('.sidebar-user')) document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('show')); };
+document.addEventListener('click', e => {
+  if (!e.target.closest('.dropdown') && !e.target.closest('.sidebar-user'))
+    document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('show'));
+});
 
-// Count Up
+// ── Count-up ──
 function countUp(el, target, scale) {
-  let v = 0, step = target / 50;
+  let v = 0; const step = target / 60;
   const t = setInterval(() => {
     v += step;
     if (v >= target) { v = target; clearInterval(t); }
-    el.textContent = scale === 'jt' ? 'Rp ' + (v/1e6).toFixed(1) + 'jt' : Math.floor(v);
-  }, 20);
+    if (scale === 'jt') el.textContent = 'Rp ' + (v/1e6).toFixed(1) + 'jt';
+    else el.textContent = Math.floor(v).toLocaleString('id-ID');
+  }, 16);
 }
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('[data-count]').forEach(el => countUp(el, +el.dataset.count, el.dataset.scale));
-  buildMockData();
-});
 
-// Render Data
-function buildMockData() {
-  // Chart (Simple Bars)
-  const barArea = document.getElementById('barChartArea');
-  const barData = [40, 50, 45, 60, 70, 65, 80, 85, 95, 100, 110, 120];
-  barArea.innerHTML = barData.map(h => `<div style="flex:1;background:linear-gradient(0deg, #1f6feb, #388bfd);border-radius:4px 4px 0 0;height:${h}%;min-width:15px;transition:all .3s" title="Nilai Portofolio"></div>`).join('');
+// ── Data ──
+const umkmData = [
+  {id:1, name:'Toko Karya Maju', sektor:'Perdagangan', kota:'Jakarta', investasi:'50.000.000', return:'18.200.000', roi:22, risiko:'Rendah', skor:88, status:'Aktif', bulan:'18 bln', laba:'48.2jt'},
+  {id:2, name:'Warung Sejahtera', sektor:'Kuliner', kota:'Surabaya', investasi:'30.000.000', return:'9.600.000', roi:18, risiko:'Rendah', skor:82, status:'Aktif', bulan:'12 bln', laba:'32.4jt'},
+  {id:3, name:'Batik Makmur', sektor:'Manufaktur', kota:'Yogyakarta', investasi:'40.000.000', return:'9.200.000', roi:14, risiko:'Sedang', skor:74, status:'Aktif', bulan:'8 bln', laba:'28.1jt'},
+  {id:4, name:'Kuliner Unggul', sektor:'Kuliner', kota:'Bandung', investasi:'25.000.000', return:'4.200.000', roi:10, risiko:'Rendah', skor:79, status:'Aktif', bulan:'6 bln', laba:'22.5jt'},
+  {id:5, name:'Koperasi Jaya', sektor:'Perdagangan', kota:'Semarang', investasi:'35.000.000', return:'6.800.000', roi:11, risiko:'Sedang', skor:71, status:'Aktif', bulan:'14 bln', laba:'19.8jt'},
+];
 
-  // Table Investasi
-  const invest = [
-    {nama:'Kopi Kenangan Senja', sektor:'F&B', dana:'Rp 50.000.000', yield:'16%', tempo:'Des 2025', prog:60},
-    {nama:'Toko Baju Muslimah', sektor:'Retail', dana:'Rp 25.000.000', yield:'14%', tempo:'Okt 2025', prog:80},
-    {nama:'Ayam Geprek Gacor', sektor:'F&B', dana:'Rp 75.000.000', yield:'18%', tempo:'Jan 2026', prog:30},
-    {nama:'Laundry Bersih Terus', sektor:'Jasa', dana:'Rp 30.000.000', yield:'15%', tempo:'Nov 2025', prog:95}
-  ];
-  document.getElementById('investTable').innerHTML = invest.map(r => `
+const allUmkm = [
+  ...umkmData,
+  {id:6, name:'Kerajinan Nusantara', sektor:'Manufaktur', kota:'Solo', investasi:'20.000.000', return:null, roi:13, risiko:'Rendah', skor:77, status:'Tersedia', bulan:'—', laba:'15.3jt'},
+  {id:7, name:'Agro Mandiri', sektor:'Pertanian', kota:'Malang', investasi:'15.000.000', return:null, roi:9, risiko:'Sedang', skor:65, status:'Tersedia', bulan:'—', laba:'11.2jt'},
+  {id:8, name:'Salon Cantik', sektor:'Jasa', kota:'Denpasar', investasi:'10.000.000', return:null, roi:11, risiko:'Rendah', skor:72, status:'Tersedia', bulan:'—', laba:'8.4jt'},
+  {id:9, name:'Toko Elektronik Prima', sektor:'Perdagangan', kota:'Medan', investasi:'45.000.000', return:null, roi:16, risiko:'Sedang', skor:80, status:'Review', bulan:'—', laba:'38.6jt'},
+];
+
+const riskColor = {'Rendah':'#3fb950','Sedang':'#d29922','Tinggi':'#f85149'};
+const sektColor = {'Perdagangan':'#388bfd','Kuliner':'#3fb950','Manufaktur':'#a371f7','Jasa':'#14a085','Pertanian':'#d29922'};
+
+// ── Portfolio table ──
+function buildPortfolioTable() {
+  const tbody = document.getElementById('portfolioTable');
+  if (!tbody) return;
+  tbody.innerHTML = umkmData.map(u => `
     <tr>
-      <td style="font-weight:600;color:#e6edf3">${r.nama}</td>
-      <td><span style="background:#21262d;padding:2px 8px;border-radius:4px;font-size:11px">${r.sektor}</span></td>
-      <td style="text-align:right;color:#388bfd;font-weight:600">${r.dana}</td>
-      <td style="text-align:right;color:#3fb950">${r.yield}</td>
-      <td>${r.tempo}</td>
       <td>
-        <div style="font-size:11px;margin-bottom:4px">Berjalan ${r.prog}%</div>
-        <div class="prog-bg"><div class="prog-fill" style="width:${r.prog}%"></div></div>
+        <div style="font-size:13px;font-weight:500;color:#e6edf3">${u.name}</div>
+        <div style="font-size:11px;color:#7d8590">${u.kota} · ${u.bulan}</div>
+      </td>
+      <td><span style="padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;background:${sektColor[u.sektor] || '#388bfd'}22;color:${sektColor[u.sektor] || '#388bfd'}">${u.sektor}</span></td>
+      <td style="text-align:right;color:#c9d1d9">Rp ${u.investasi}</td>
+      <td style="text-align:right;color:#3fb950;font-weight:600">Rp ${u.return}</td>
+      <td style="text-align:right;color:#388bfd;font-weight:700">${u.roi}%</td>
+      <td style="text-align:center"><span style="padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;background:rgba(35,134,54,.12);color:#3fb950">${u.status}</span></td>
+    </tr>`).join('');
+}
+
+// ── Portfolio cards ──
+function buildPortfolioCards() {
+  const container = document.getElementById('portfolioCards');
+  if (!container) return;
+  container.innerHTML = umkmData.map(u => `
+    <div class="umkm-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+        <div>
+          <div style="font-size:14px;font-weight:600;color:#e6edf3">${u.name}</div>
+          <div style="font-size:11.5px;color:#7d8590;margin-top:2px">${u.kota}</div>
+        </div>
+        <span style="padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;background:${sektColor[u.sektor]}22;color:${sektColor[u.sektor]}">${u.sektor}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+        <div style="background:#0d1117;border-radius:8px;padding:8px;text-align:center">
+          <div style="font-size:14px;font-weight:700;color:#388bfd;font-family:'Inter Tight',sans-serif">Rp ${(+u.investasi.replace(/\./g,'')/1e6).toFixed(0)}jt</div>
+          <div style="font-size:9px;color:#7d8590;margin-top:2px">Investasi</div>
+        </div>
+        <div style="background:#0d1117;border-radius:8px;padding:8px;text-align:center">
+          <div style="font-size:14px;font-weight:700;color:#3fb950;font-family:'Inter Tight',sans-serif">Rp ${(+u.return.replace(/\./g,'')/1e6).toFixed(1)}jt</div>
+          <div style="font-size:9px;color:#7d8590;margin-top:2px">Return</div>
+        </div>
+        <div style="background:#0d1117;border-radius:8px;padding:8px;text-align:center">
+          <div style="font-size:14px;font-weight:700;color:#d29922;font-family:'Inter Tight',sans-serif">${u.roi}%</div>
+          <div style="font-size:9px;color:#7d8590;margin-top:2px">ROI</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;font-size:11.5px">
+        <div style="display:flex;align-items:center;gap:5px">
+          <div style="width:6px;height:6px;border-radius:50%;background:${riskColor[u.risiko]}"></div>
+          <span style="color:${riskColor[u.risiko]};font-weight:600">Risiko ${u.risiko}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#388bfd" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span style="color:#388bfd;font-weight:600">Skor ${u.skor}</span>
+        </div>
+        <button class="btn-secondary" style="font-size:11px;padding:3px 10px">Detail →</button>
+      </div>
+    </div>`).join('');
+}
+
+// ── UMKM grid ──
+function buildUmkmGrid() {
+  const container = document.getElementById('umkmGrid');
+  if (!container) return;
+  container.innerHTML = allUmkm.map(u => `
+    <div class="umkm-card" onclick="showPage('analisis',document.querySelector('[onclick*=\\'analisis\\']'))">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+        <div>
+          <div style="font-size:14px;font-weight:600;color:#e6edf3">${u.name}</div>
+          <div style="font-size:11px;color:#7d8590;margin-top:2px">${u.kota}</div>
+        </div>
+        <span style="padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;background:${u.status==='Aktif'?'rgba(35,134,54,.12)':u.status==='Review'?'rgba(210,153,34,.12)':'rgba(31,111,235,.12)'};color:${u.status==='Aktif'?'#3fb950':u.status==='Review'?'#d29922':'#388bfd'}">${u.status}</span>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:10px">
+        <span style="padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;background:${sektColor[u.sektor]||'#388bfd'}22;color:${sektColor[u.sektor]||'#388bfd'}">${u.sektor}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+        <div style="background:#0d1117;border-radius:8px;padding:8px">
+          <div style="font-size:10px;color:#7d8590;margin-bottom:2px">Min. Investasi</div>
+          <div style="font-size:13px;font-weight:600;color:#c9d1d9">Rp ${(+u.investasi.replace(/\./g,'')/1e6).toFixed(0)}jt</div>
+        </div>
+        <div style="background:#0d1117;border-radius:8px;padding:8px">
+          <div style="font-size:10px;color:#7d8590;margin-bottom:2px">Proyeksi ROI</div>
+          <div style="font-size:13px;font-weight:600;color:#3fb950">${u.roi}%/thn</div>
+        </div>
+        <div style="background:#0d1117;border-radius:8px;padding:8px">
+          <div style="font-size:10px;color:#7d8590;margin-bottom:2px">Laba Bersih</div>
+          <div style="font-size:13px;font-weight:600;color:#c9d1d9">${u.laba}</div>
+        </div>
+        <div style="background:#0d1117;border-radius:8px;padding:8px">
+          <div style="font-size:10px;color:#7d8590;margin-bottom:2px">Skor Investasi</div>
+          <div style="font-size:13px;font-weight:600;color:#388bfd">${u.skor}/100</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:5px;font-size:11.5px">
+          <div style="width:6px;height:6px;border-radius:50%;background:${riskColor[u.risiko]}"></div>
+          <span style="color:${riskColor[u.risiko]};font-weight:600">Risiko ${u.risiko}</span>
+        </div>
+        <button class="btn-primary" style="font-size:11px;padding:4px 12px" onclick="event.stopPropagation();showPage('analisis',document.querySelector('[onclick*=\\'analisis\\']'))">
+          Analisis →
+        </button>
+      </div>
+    </div>`).join('');
+}
+
+// ── Watchlist table ──
+function buildWatchlist() {
+  const tbody = document.getElementById('watchlistTable');
+  if (!tbody) return;
+  const items = allUmkm.filter(u => u.status !== 'Aktif').concat(umkmData.slice(0,2));
+  tbody.innerHTML = items.map(u => `
+    <tr>
+      <td>
+        <div style="font-weight:500;color:#e6edf3">${u.name}</div>
+        <div style="font-size:11px;color:#7d8590">${u.kota}</div>
+      </td>
+      <td><span style="padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;background:${sektColor[u.sektor]||'#388bfd'}22;color:${sektColor[u.sektor]||'#388bfd'}">${u.sektor}</span></td>
+      <td style="text-align:right;color:#3fb950">${u.laba}</td>
+      <td style="text-align:right;color:#3fb950;font-weight:600">${u.roi}%</td>
+      <td style="text-align:center"><span style="padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;background:${riskColor[u.risiko]}22;color:${riskColor[u.risiko]}">${u.risiko}</span></td>
+      <td style="text-align:center;font-weight:700;color:#388bfd">${u.skor}</td>
+      <td style="text-align:center">
+        <div style="display:flex;gap:5px;justify-content:center">
+          <button class="btn-primary" style="font-size:11px;padding:3px 10px">Invest</button>
+          <button class="btn-secondary" style="font-size:11px;padding:3px 8px">Detail</button>
+        </div>
       </td>
     </tr>`).join('');
-
-  // Marketplace Grid
-  const market = [
-    {nama:'Sambal Bakar Nusantara', desc:'Ekspansi cabang ke-4 di Bandung.', sektor:'F&B', target:'Rp 150 Juta', yield:'17.5% p.a', tenor:'12 Bulan', risk:'Menengah'},
-    {nama:'Sneakers Clean & Care', desc:'Pembelian mesin cuci sepatu otomatis.', sektor:'Jasa', target:'Rp 40 Juta', yield:'14% p.a', tenor:'6 Bulan', risk:'Rendah'},
-    {nama:'Toko Kelontong Makmur', desc:'Penambahan stok barang grosir menjelang puasa.', sektor:'Retail', target:'Rp 80 Juta', yield:'15% p.a', tenor:'8 Bulan', risk:'Rendah'},
-  ];
-  document.getElementById('marketGrid').innerHTML = market.map(m => `
-    <div class="mp-card">
-      <div style="display:flex;justify-content:space-between;margin-bottom:10px">
-        <span style="font-size:11px;background:#21262d;padding:2px 8px;border-radius:4px;color:#c9d1d9">${m.sektor}</span>
-        <span style="font-size:11px;color:${m.risk==='Rendah'?'#3fb950':'#d29922'}">Risiko ${m.risk}</span>
-      </div>
-      <h3 style="font-size:16px;font-weight:700;color:#f0f6fc;margin-bottom:6px">${m.nama}</h3>
-      <p style="font-size:12px;color:#7d8590;margin-bottom:16px;height:36px">${m.desc}</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;padding:12px;background:#0d1117;border-radius:8px">
-        <div><div style="font-size:10px;color:#7d8590">Target Dana</div><div style="font-size:13px;font-weight:700;color:#e6edf3">${m.target}</div></div>
-        <div><div style="font-size:10px;color:#7d8590">Est. Imbal Hasil</div><div style="font-size:13px;font-weight:700;color:#3fb950">${m.yield}</div></div>
-        <div><div style="font-size:10px;color:#7d8590">Tenor</div><div style="font-size:13px;font-weight:600;color:#c9d1d9">${m.tenor}</div></div>
-      </div>
-      <button class="btn-primary" style="width:100%;justify-content:center" onclick="alert('Membuka detail proposal pendanaan...')">Lihat Proposal & Danai</button>
-    </div>
-  `).join('');
-
-  // Transaksi History
-  const history = [
-    {tgl:'20 Apr 2025', jenis:'Penerimaan Dividen', desc:'Bagi hasil Kopi Kenangan Senja', nom:'+ Rp 650.000', clr:'#3fb950', st:'Berhasil'},
-    {tgl:'15 Apr 2025', jenis:'Pendanaan Baru', desc:'Toko Baju Muslimah', nom:'- Rp 25.000.000', clr:'#f85149', st:'Berhasil'},
-    {tgl:'10 Apr 2025', jenis:'Deposit Saldo', desc:'Transfer Bank BCA', nom:'+ Rp 50.000.000', clr:'#388bfd', st:'Berhasil'},
-    {tgl:'01 Apr 2025', jenis:'Penerimaan Pokok', desc:'Jatuh Tempo Laundry Bersih', nom:'+ Rp 30.000.000', clr:'#3fb950', st:'Berhasil'},
-  ];
-  document.getElementById('historyTable').innerHTML = history.map(h => `
-    <tr>
-      <td style="color:#7d8590">${h.tgl}</td>
-      <td style="font-weight:600">${h.jenis}</td>
-      <td style="font-size:12px">${h.desc}</td>
-      <td style="text-align:right;color:${h.clr};font-weight:600">${h.nom}</td>
-      <td><span style="background:rgba(35,134,54,.1);color:#3fb950;padding:3px 8px;border-radius:4px;font-size:11px">${h.st}</span></td>
-    </tr>
-  `).join('');
 }
+
+// ── Transactions ──
+function buildTxTable() {
+  const tbody = document.getElementById('txTable');
+  if (!tbody) return;
+  const txs = [
+    {tgl:'15 Mar 2025',umkm:'Toko Karya Maju',jenis:'Imbal Hasil',jml:'+4.550.000',status:'Selesai',c:'#3fb950'},
+    {tgl:'10 Mar 2025',umkm:'Warung Sejahtera',jenis:'Imbal Hasil',jml:'+2.400.000',status:'Selesai',c:'#3fb950'},
+    {tgl:'01 Mar 2025',umkm:'Batik Makmur',jenis:'Investasi Baru',jml:'-10.000.000',status:'Selesai',c:'#388bfd'},
+    {tgl:'15 Feb 2025',umkm:'Toko Karya Maju',jenis:'Imbal Hasil',jml:'+4.550.000',status:'Selesai',c:'#3fb950'},
+    {tgl:'10 Feb 2025',umkm:'Kuliner Unggul',jenis:'Investasi Baru',jml:'-25.000.000',status:'Selesai',c:'#388bfd'},
+    {tgl:'05 Feb 2025',umkm:'Warung Sejahtera',jenis:'Imbal Hasil',jml:'+2.400.000',status:'Selesai',c:'#3fb950'},
+    {tgl:'01 Feb 2025',umkm:'Koperasi Jaya',jenis:'Imbal Hasil',jml:'+1.700.000',status:'Pending',c:'#d29922'},
+    {tgl:'28 Jan 2025',umkm:'Batik Makmur',jenis:'Imbal Hasil',jml:'+2.300.000',status:'Selesai',c:'#3fb950'},
+  ];
+  tbody.innerHTML = txs.map(t => `
+    <tr>
+      <td style="color:#7d8590;white-space:nowrap">${t.tgl}</td>
+      <td style="font-weight:500">${t.umkm}</td>
+      <td><span style="padding:2px 8px;border-radius:99px;font-size:11px;background:${t.jenis==='Imbal Hasil'?'rgba(35,134,54,.12)':'rgba(31,111,235,.12)'};color:${t.jenis==='Imbal Hasil'?'#3fb950':'#388bfd'};font-weight:600">${t.jenis}</span></td>
+      <td style="text-align:right;font-weight:700;color:${t.c}">${t.jml}</td>
+      <td style="text-align:center"><span style="padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;background:${t.status==='Selesai'?'rgba(35,134,54,.12)':'rgba(210,153,34,.12)'};color:${t.status==='Selesai'?'#3fb950':'#d29922'}">${t.status}</span></td>
+    </tr>`).join('');
+}
+
+// ── Activity feed ──
+function buildActivity() {
+  const feed = document.getElementById('activityFeed');
+  if (!feed) return;
+  const acts = [
+    {ic:'📈',msg:'Laporan Q1 Toko Karya Maju tersedia',t:'2 mnt lalu',c:'#388bfd'},
+    {ic:'💰',msg:'Imbal hasil Rp 4.55jt diterima',t:'3 jam lalu',c:'#3fb950'},
+    {ic:'⭐',msg:'UMKM Batik Makmur naik skor ke 74',t:'1 hari lalu',c:'#d29922'},
+    {ic:'🏢',msg:'Koperasi Jaya upload laporan baru',t:'2 hari lalu',c:'#a371f7'},
+    {ic:'🔔',msg:'8 UMKM baru tersedia untuk review',t:'3 hari lalu',c:'#14a085'},
+  ];
+  feed.innerHTML = acts.map(a => `
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid #21262d">
+      <div style="width:28px;height:28px;border-radius:8px;background:${a.c}18;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px">${a.ic}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;color:#c9d1d9;line-height:1.4">${a.msg}</div>
+        <div style="font-size:10.5px;color:#484f58;margin-top:2px">${a.t}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ── Init ──
+window.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-count]').forEach(el => countUp(el, +el.dataset.count, el.dataset.scale));
+  buildPortfolioTable();
+  buildPortfolioCards();
+  buildUmkmGrid();
+  buildWatchlist();
+  buildTxTable();
+  buildActivity();
+});
 </script>
 </body>
 </html>

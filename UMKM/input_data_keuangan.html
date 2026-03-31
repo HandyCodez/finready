@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Inter+Tight:wght@600;700&display=swap" rel="stylesheet">
+  <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Inter','sans-serif'], tight: ['"Inter Tight"','sans-serif'] } } } }</script>
+  
+    <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #0d1117; color: #e6edf3; min-height: 100vh; overflow: hidden; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+
+    /* ══════════════════════════════
+       MAIN CONTENT
+    ══════════════════════════════ */
+    .main-scroll { flex: 1; overflow-y: auto; background: #0d1117; }
+    .content { padding: 24px; max-width: 1400px; }
+
+    /* ── Stat cards ── */
+    .stat-card {
+      background: #161b22; border: 1px solid #21262d;
+      border-radius: 12px; padding: 18px 18px 14px;
+      position: relative; overflow: hidden; transition: border-color .2s;
+    }
+    .stat-card:hover { border-color: #30363d; }
+    .stat-card::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      border-radius: 12px 12px 0 0;
+    }
+    .sc-green::after  { background: linear-gradient(90deg,#238636,#3fb950); }
+    .sc-red::after    { background: linear-gradient(90deg,#da3633,#f85149); }
+    .sc-blue::after   { background: linear-gradient(90deg,#1f6feb,#388bfd); }
+    .sc-amber::after  { background: linear-gradient(90deg,#9e6a03,#d29922); }
+    .sc-purple::after { background: linear-gradient(90deg,#8957e5,#a371f7); }
+    .sc-teal::after   { background: linear-gradient(90deg,#0d7377,#14a085); }
+
+    .stat-icon {
+      width: 38px; height: 38px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .trend-up   { color: #3fb950; background: rgba(35,134,54,.12); }
+    .trend-down { color: #f85149; background: rgba(218,54,51,.12); }
+    .badge-pill {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 2px 8px; border-radius: 99px;
+      font-size: 11px; font-weight: 600;
+    }
+
+    /* ── Widget ── */
+    .widget {
+      background: #161b22; border: 1px solid #21262d; border-radius: 12px; overflow: hidden;
+    }
+    .widget-hd {
+      padding: 14px 18px 12px; border-bottom: 1px solid #21262d;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .widget-title { font-size: 13.5px; font-weight: 600; color: #e6edf3; }
+    .widget-sub   { font-size: 11.5px; color: #7d8590; margin-top: 1px; }
+
+    /* ── Table ── */
+    .fi-tbl { width: 100%; border-collapse: collapse; }
+    .fi-tbl thead th {
+      font-size: 11px; font-weight: 700; letter-spacing: .05em;
+      text-transform: uppercase; color: #7d8590;
+      padding: 9px 14px; background: #0d1117;
+      border-bottom: 1px solid #21262d; white-space: nowrap;
+    }
+    .fi-tbl tbody td {
+      font-size: 13px; color: #c9d1d9;
+      padding: 11px 14px; border-bottom: 1px solid rgba(33,38,45,.8);
+    }
+    .fi-tbl tbody tr:hover td { background: rgba(255,255,255,.02); }
+    .fi-tbl tbody tr:last-child td { border-bottom: none; }
+
+    /* ── Progress ── */
+    .prog-bg { height: 5px; background: #21262d; border-radius: 99px; overflow: hidden; }
+    .prog-fill { height: 100%; border-radius: 99px; transition: width .6s ease; }
+
+    /* ── Tab pills ── */
+    .tab-pill {
+      padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: all .13s; color: #7d8590;
+    }
+    .tab-pill.active { background: rgba(35,134,54,.15); color: #3fb950; }
+    .tab-pill:hover:not(.active) { background: #21262d; color: #c9d1d9; }
+
+
+    /* ── Chart grid lines ── */
+    .chart-line { stroke: #21262d; stroke-width: 1; }
+
+    /* ── Action button ── */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #238636; color: #fff; border: none;
+      border-radius: 8px; padding: 8px 16px;
+      font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: background .13s;
+    }
+    .btn-primary:hover { background: #2ea043; }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: transparent; color: #c9d1d9;
+      border: 1px solid #30363d;
+      border-radius: 8px; padding: 7px 14px;
+      font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit;
+      transition: all .13s;
+    }
+    .btn-secondary:hover { background: #21262d; border-color: #484f58; }
+
+    /* ── Input ── */
+    .fi-input {
+      background: #0d1117; border: 1px solid #30363d; border-radius: 8px;
+      padding: 8px 12px; font-size: 13px; color: #e6edf3; font-family: inherit;
+      transition: border-color .13s; width: 100%;
+    }
+    .fi-input:focus { outline: none; border-color: #238636; box-shadow: 0 0 0 3px rgba(35,134,54,.15); }
+    .fi-input::placeholder { color: #484f58; }
+    .fi-select {
+      background: #0d1117; border: 1px solid #30363d; border-radius: 8px;
+      padding: 8px 12px; font-size: 13px; color: #e6edf3; font-family: inherit;
+      cursor: pointer;
+    }
+    .fi-select:focus { outline: none; border-color: #238636; }
+
+    label.fi-label { font-size: 12px; font-weight: 600; color: #8b949e; margin-bottom: 5px; display: block; }
+
+    /* ── Card (form area) ── */
+    .form-card { background: #161b22; border: 1px solid #21262d; border-radius: 12px; padding: 20px; }
+
+    /* ── Stagger in ── */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    .stagger > * { animation: fadeUp .3s ease both; }
+    .stagger > *:nth-child(1){animation-delay:.03s}
+    .stagger > *:nth-child(2){animation-delay:.06s}
+    .stagger > *:nth-child(3){animation-delay:.09s}
+    .stagger > *:nth-child(4){animation-delay:.12s}
+    .stagger > *:nth-child(5){animation-delay:.15s}
+    .stagger > *:nth-child(6){animation-delay:.18s}
+
+    /* ── Responsive ── */
+    @media(max-width:768px){
+      #sidebar{position:fixed;z-index:100;transform:translateX(-100%)}
+      #sidebar.mobile-open{transform:translateX(0)}
+    }
+
+    /* ── Empty state ── */
+    .empty-state { padding: 48px 24px; text-align: center; }
+    .empty-icon { width: 56px; height: 56px; border-radius: 14px; background: #21262d; margin: 0 auto 14px; display: flex; align-items: center; justify-content: center; }
+
+    /* ── Notification dot ── */
+    .notif-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: #f85149; border: 2px solid #161b22; }
+
+    /* ── Dropdown ── */
+    .dropdown { position: relative; }
+    .dropdown-menu {
+      position: absolute; right: 0; top: calc(100%+6px); z-index: 200;
+      background: #1c2128; border: 1px solid #30363d; border-radius: 10px;
+      min-width: 180px; padding: 4px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.5); display: none;
+    }
+    .dropdown-menu.show { display: block; animation: fadeUp .15s ease; }
+    .dd-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 7px; font-size: 12.5px;
+      color: #c9d1d9; cursor: pointer; transition: all .1s;
+    }
+    .dd-item:hover { background: #21262d; }
+    .dd-sep { height: 1px; background: #21262d; margin: 3px 0; }
+  </style>
+</head>
+<body>
+    <div class="page-section" id="page-input">
+      <div style="margin-bottom:20px"><h1 style="font-family:'Inter Tight',sans-serif;font-size:20px;font-weight:700;color:#f0f6fc">Input Data Keuangan</h1><p style="font-size:12.5px;color:#7d8590;margin-top:3px">Tambah transaksi baru ke jurnal umum</p></div>
+
+      <!-- Tabs -->
+      <div style="display:flex;gap:6px;margin-bottom:20px;border-bottom:1px solid #21262d;padding-bottom:12px">
+        <div class="tab-pill active" id="inp-t1" onclick="switchInputTab('pendapatan')">Pendapatan</div>
+        <div class="tab-pill" id="inp-t2" onclick="switchInputTab('pengeluaran')">Pengeluaran</div>
+        <div class="tab-pill" id="inp-t3" onclick="switchInputTab('modal')">Modal/Ekuitas</div>
+        <div class="tab-pill" id="inp-t4" onclick="switchInputTab('aset')">Aset</div>
+        <div class="tab-pill" id="inp-t5" onclick="switchInputTab('kewajiban')">Kewajiban</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 340px;gap:20px">
+        <div class="form-card">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+            <div><label class="fi-label">Tanggal Transaksi</label><input type="date" class="fi-input" value="2025-04-15"></div>
+            <div><label class="fi-label">No. Referensi</label><input type="text" class="fi-input" placeholder="JU-2025-0088" value="JU-2025-0088"></div>
+          </div>
+          <div style="margin-bottom:14px"><label class="fi-label">Akun <span style="color:#f85149">*</span></label>
+            <select class="fi-input">
+              <option>411 - Pendapatan Penjualan</option>
+              <option>412 - Pendapatan Jasa</option>
+              <option>413 - Pendapatan Lain-lain</option>
+            </select>
+          </div>
+          <div style="margin-bottom:14px"><label class="fi-label">Deskripsi <span style="color:#f85149">*</span></label><input type="text" class="fi-input" placeholder="Penjualan barang dagangan kepada..."></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+            <div><label class="fi-label">Jumlah (Rp) <span style="color:#f85149">*</span></label><input type="text" class="fi-input" placeholder="0" oninput="formatRupiah(this)"></div>
+            <div><label class="fi-label">Metode Pembayaran</label>
+              <select class="fi-input"><option>Tunai</option><option>Transfer Bank</option><option>Kredit</option></select>
+            </div>
+            <div><label class="fi-label">Kelompok akun</label>
+              <select class="fi-input"><option>Debit</option><option>Kredit</option></select>
+            </div>
+          </div>
+          <div style="margin-bottom:20px"><label class="fi-label">Catatan Tambahan</label><textarea class="fi-input" rows="3" placeholder="Opsional — keterangan tambahan..." style="resize:none"></textarea></div>
+          <div style="display:flex;gap:10px">
+            <button class="btn-primary" onclick="submitEntry()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>
+              Simpan Transaksi
+            </button>
+            <button class="btn-secondary">Reset Form</button>
+          </div>
+        </div>
+
+        <!-- Preview + recent -->
+        <div>
+          <div class="widget" style="margin-bottom:14px">
+            <div class="widget-hd"><div class="widget-title">Preview Jurnal Entry</div></div>
+            <div style="padding:14px">
+              <div style="background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:12px;font-family:monospace;font-size:12px;color:#7d8590">
+                <div style="color:#3fb950;margin-bottom:4px">Debet:</div>
+                <div style="color:#c9d1d9;margin-bottom:10px;padding-left:12px">1110 Kas · Rp —</div>
+                <div style="color:#f85149;margin-bottom:4px">Kredit:</div>
+                <div style="color:#c9d1d9;padding-left:12px">4110 Pend. Penjualan · Rp —</div>
+              </div>
+            </div>
+          </div>
+          <div class="widget">
+            <div class="widget-hd"><div class="widget-title">5 Entri Terakhir</div></div>
+            <div style="padding:10px 14px;font-size:12px;color:#7d8590;space-y:8px" id="recentEntries">
+              <div style="padding:8px 0;border-bottom:1px solid #21262d;color:#c9d1d9">Penjualan tunai <span style="float:right;color:#3fb950">+4.2jt</span></div>
+              <div style="padding:8px 0;border-bottom:1px solid #21262d;color:#c9d1d9">Bayar sewa toko <span style="float:right;color:#f85149">-2.5jt</span></div>
+              <div style="padding:8px 0;border-bottom:1px solid #21262d;color:#c9d1d9">Beli persediaan <span style="float:right;color:#f85149">-1.8jt</span></div>
+              <div style="padding:8px 0;border-bottom:1px solid #21262d;color:#c9d1d9">Penjualan kredit <span style="float:right;color:#3fb950">+3.1jt</span></div>
+              <div style="padding:8px 0;color:#c9d1d9">Bayar listrik <span style="float:right;color:#f85149">-0.4jt</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</body>
+</html>
